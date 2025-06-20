@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>회원가입</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	background-color: #f4f6fa;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+}
+
+.join-container {
+	background-color: white;
+	padding: 40px;
+	border-radius: 12px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 400px;
+}
+
+h2 {
+	text-align: center;
+	margin-bottom: 30px;
+	color: #337DFF;
+}
+
+label {
+	display: block;
+	margin-bottom: 8px;
+	font-weight: bold;
+	color: #333;
+}
+
+input[type="text"], input[type="password"] {
+	width: 100%;
+	padding: 12px;
+	margin-bottom: 20px;
+	border-radius: 6px;
+	border: 1px solid #ccc;
+	font-size: 14px;
+}
+
+.form-row {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.form-row button {
+	width: 80px; /* 적절한 값으로 조절 */
+	margin-left: 10px;
+	padding: 8px 12px;
+	font-size: 13px;
+	border: none;
+	background-color: #337DFF;
+	color: white;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+.form-row span {
+	margin-left: 10px;
+	font-size: 13px;
+}
+
+.match-msg {
+	font-size: 13px;
+}
+
+.match {
+	color: green;
+}
+
+.mismatch {
+	color: red;
+}
+
+button[type="submit"] {
+	width: 100%;
+	padding: 12px;
+	background-color: #337DFF;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-size: 15px;
+	cursor: pointer;
+	margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+	background-color: #1d5fd9;
+}
+
+.email-container {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+input.email-local-part, select.email-domain {
+	height: 35px;
+	font-size: 16px;
+}
+
+#at-symbol { /*이메일 형식 골뱅이 크기 키우기*/
+	font-size: 24px;
+	padding: 0 8px;
+	font-weight: bold;
+	line-height: 35px; /* input 높이에 맞춤 */
+}
+</style>
+</head>
+<body>
+
+	<div class="join-container">
+		<h2>회원가입</h2>
+
+		<form action="/join" method="post" id="joinForm">
+
+			<label for="username">아이디</label>
+			<div class="form-row">
+				<input type="text" id="username" name="username" required
+					th:value="${user != null} ? ${user.username} : ''">
+				<button type="button" onclick="checkUsername()">
+					중복<br>확인
+				</button>
+			</div>
+			<span id="checkResult"></span> <label for="password">비밀번호</label> <input
+				type="password" id="password" name="password" required> <label
+				for="confirmPassword">비밀번호 확인</label> <input type="password"
+				id="confirmPassword" required onkeyup="checkPasswordMatch()">
+			<span id="passwordMatchMsg" class="match-msg"></span> <label
+				for="name">이름</label> <input type="text" id="name" name="name"
+				required th:value="${user != null} ? ${user.name} : ''"> <label
+				for="emailId">이메일</label> <input type="hidden" id="fullEmail"
+				name="email" />
+
+			<div class="form-row">
+				<div class="email-container">
+					<input type="text" id="emailId" name="emailId" required
+						th:value="${user != null} ? ${#strings.substringBefore(user.email, '@')} : ''"
+						placeholder="이메일 아이디" style="font-size: 16px;" /> <span
+						id="at-symbol" style="font-size: 22px; padding: 0 3px;">@</span> <select
+						id="emailDomain" name="emailDomain" required
+						style="width: 150px; height: 35px; font-size: 16px;">
+						<option
+							th:selected="${user != null and #strings.substringAfter(user.email, '@') == 'gmail.com'}"
+							value="gmail.com">gmail.com</option>
+						<option
+							th:selected="${user != null and #strings.substringAfter(user.email, '@') == 'naver.com'}"
+							value="naver.com">naver.com</option>
+						<option
+							th:selected="${user != null and #strings.substringAfter(user.email, '@') == 'daum.net'}"
+							value="daum.net">daum.net</option>
+						<option
+							th:selected="${user != null and !(#strings.substringAfter(user.email, '@') == 'gmail.com' or #strings.substringAfter(user.email, '@') == 'naver.com' or #strings.substringAfter(user.email, '@') == 'daum.net')}"
+							value="custom">직접 입력</option>
+
+						<!-- 이메일 관련 input 아래에 추가 -->
+
+
+
+					</select>
+
+					<!-- 직접 입력할 도메인 텍스트 박스, 기본은 숨김 -->
+					<input type="text" id="customDomain" name="customDomain"
+						placeholder="도메인 입력"
+						style="height: 35px; font-size: 16px; width: 150px; display: none;" />
+				</div>
+
+
+
+				<button type="button" onclick="sendVerificationEmail()">
+					인증<br>하기
+				</button>
+
+
+			</div>
+
+			<span id="emailVerifyResult"></span>
+			<!-- 이메일 인증 완료 여부 추적용 hidden -->
+			<input type="hidden" id="emailVerified" name="emailVerified"
+				value="false" />
+
+			<!-- 에러 메시지 빨간색으로 표시 -->
+			<div style="color: red; margin-top: 10px;">
+				<span th:text="${error}"></span>
+			</div>
+
+			<script>
+  const domainSelect = document.getElementById('emailDomain');
+  const customDomainInput = document.getElementById('customDomain');
+
+  function toggleCustomDomain() {
+    if (domainSelect.value === 'custom') {
+      customDomainInput.style.display = 'inline-block';
+      customDomainInput.required = true;
+    } else {
+      customDomainInput.style.display = 'none';
+      customDomainInput.required = false;
+      customDomainInput.value = '';
+    }
+  }
+
+  domainSelect.addEventListener('change', toggleCustomDomain);
+
+  // 페이지 로드 시 초기 상태 설정
+  window.addEventListener('load', () => {
+    toggleCustomDomain();
+  });
+</script>
+
+			<input type="hidden" id="emailVerified" name="emailVerified" value="false" />
+			
+			<button type="submit">가입하기</button>
+		</form>
+
+		<script>
+			function checkPasswordMatch() {
+				const pw = document.getElementById('password').value;
+				const cpw = document.getElementById('confirmPassword').value;
+				const msg = document.getElementById('passwordMatchMsg');
+
+				if (!cpw) {
+					msg.textContent = '';
+					return;
+				}
+
+				if (pw === cpw) {
+					msg.textContent = '비밀번호가 일치합니다.';
+					msg.style.color = 'green';
+				} else {
+					msg.textContent = '비밀번호가 일치하지 않습니다.';
+					msg.style.color = 'red';
+				}
+			}
+		</script>
+
+	</div>
+
+	<script>
+  // 중복체크 통과 여부 플래그 추가
+  let usernameChecked = false;
+
+  function sendVerificationEmail() {
+    const id = $("#emailId").val().trim();
+    let domain = $("#emailDomain").val();
+    const custom = $("#customDomain").val().trim();
+
+    $("#emailVerifyResult").text("");
+    $("span[th\\:text='${error}']").text("");
+
+    if (domain === 'custom') {
+      if (!custom) {
+        showEmailError("도메인을 입력하세요.");
+        return;
+      }
+      domain = custom;
+    }
+
+    const fullEmail = id + "@" + domain;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(fullEmail)) {
+      showEmailError("유효한 이메일 주소를 입력하세요.");
+      return;
+    }
+
+    $("#fullEmail").val(fullEmail);
+
+    $.ajax({
+    	  url: "/email/send-verification-email",   // 실제 백엔드 API 주소로 변경하세요
+    	  method: "POST",                    // 서버가 POST 방식이라면 POST
+    	  contentType: "application/json",
+    	  data: JSON.stringify({ email: fullEmail }),
+    	  success: function () {
+    	    showEmailSuccess("인증 메일이 발송되었습니다. 메일함을 확인하세요.");
+    	    $("#emailVerified").val("true");
+    	  },
+    	  error: function (xhr, status, error) {
+    	    console.error("메일 발송 실패:", status, error, xhr.responseText);
+    	    showEmailError("인증 메일 발송에 실패했습니다.");
+    	  }
+    	});
+  }
+
+  // 이메일 입력값 변경시 인증 초기화
+  $("#emailId, #emailDomain, #customDomain").on("input change", function () {
+    $("#emailVerified").val("false");
+    $("#emailVerifyResult").text("");
+    console.log("이메일 변경됨, 인증 초기화");
+  });
+
+  // 이메일 메시지 출력 도우미 함수
+  function showEmailSuccess(message) {
+    $("#emailVerifyResult").text(message).css("color", "green");
+  }
+
+  function showEmailError(message) {
+    $("#emailVerifyResult").text(message).css("color", "red");
+  }
+
+  // 아이디 중복체크 함수
+  function checkUsername() {
+    const username = $("#username").val();
+
+    if (!username) {
+      $("#checkResult").text("아이디를 입력하세요.").css("color", "red");
+      usernameChecked = false;  // 중복체크 실패 상태
+      return;
+    }
+
+    $.ajax({
+      url: "/check-username",
+      method: "GET",
+      data: { username: username },
+      success: function (response) {
+        if (response === true) {
+          $("#checkResult").text("사용 가능한 아이디입니다.").css("color", "green");
+          usernameChecked = true;  // 중복 아님, 체크 완료
+        } else {
+          $("#checkResult").text("이미 사용 중인 아이디입니다.").css("color", "red");
+          usernameChecked = false;
+        }
+      },
+      error: function () {
+        $("#checkResult").text("오류 발생").css("color", "red");
+        usernameChecked = false;
+      }
+    });
+  }
+
+  // 아이디 입력 변경 시 중복체크 플래그 초기화
+  $("#username").on("input", function () {
+    usernameChecked = false;
+    $("#checkResult").text("");
+  });
+
+  $(document).ready(function () {
+    $('#password, #confirmPassword').on('keyup', function () {
+      const pw = $('#password').val();
+      const confirmPw = $('#confirmPassword').val();
+
+      if (!confirmPw) {
+        $('#passwordMatchMsg').text('').removeClass('match mismatch');
+        return;
+      }
+
+      if (pw === confirmPw) {
+        $('#passwordMatchMsg').text('비밀번호 일치').removeClass('mismatch').addClass('match');
+      } else {
+        $('#passwordMatchMsg').text('비밀번호 불일치').removeClass('match').addClass('mismatch');
+      }
+    });
+
+    // 가입 폼 제출 시 중복체크 & 이메일 인증 검사, 비밀번호 일치 검사
+    $("#joinForm").on("submit", function (e) {
+    	  // 1. 아이디 중복 체크
+    	  if (!usernameChecked) {
+    	    e.preventDefault();
+    	    $("#checkResult").text("아이디 중복체크를 해주세요.").css("color", "red");
+    	    $("#username").focus();
+    	    return;
+    	  }
+
+    	  // 2. 이메일 인증 여부 검사
+    	  const isVerified = $("#emailVerified").val();
+    	  if (isVerified !== "true") {
+    	    e.preventDefault();
+    	    showEmailError("이메일 인증을 완료해주세요.");
+    	    return;
+    	  }
+
+    	  // 3. 비밀번호 일치 검사 (선택사항)
+    	  const pw = $("#password").val();
+    	  const cpw = $("#confirmPassword").val();
+    	  if (pw !== cpw) {
+    	    e.preventDefault();
+    	    $("#passwordMatchMsg").text("비밀번호가 일치하지 않습니다.").css("color", "red");
+    	    return;
+    	  }
+    	});
+  		});
+
+  function validateEmail() {
+    const id = document.getElementById('emailId').value.trim();
+    let domain = document.getElementById('emailDomain').value;
+
+    if (domain === 'custom') {
+      domain = prompt("도메인을 직접 입력하세요:");
+      if (!domain) {
+        alert("도메인을 입력해야 합니다.");
+        return false;
+      }
+    }
+
+    const email = id + '@' + domain;
+    document.getElementById('fullEmail').value = email;
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      alert("유효한 이메일 주소를 입력하세요.");
+      return false;
+    }
+
+    return true;
+  }
+  
+  
+ 
+</script>
+
+
+
+	<script>
+    document.getElementById("joinForm").addEventListener("submit", function (e) {
+        const emailId = document.getElementById("emailId").value.trim();
+        const emailDomain = document.getElementById("emailDomain").value;
+        const customDomain = document.getElementById("customDomain").value.trim();
+
+        let domain = emailDomain === "custom" ? customDomain : emailDomain;
+        let fullEmail = emailId + "@" + domain;
+
+        // 💡 hidden 필드에 설정 (form 전송 직전)
+        document.getElementById("fullEmail").value = fullEmail;
+
+        // (선택) 인증 여부 체크
+        const isVerified = document.getElementById("emailVerified").value;
+        if (isVerified !== "true") {
+            e.preventDefault(); // 전송 중지
+            alert("이메일 인증을 완료해주세요.");
+        }
+    });
+</script>
+
+
+</body>
+</html>

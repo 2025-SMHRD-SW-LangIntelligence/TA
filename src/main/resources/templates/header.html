@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <!-- header.html -->
+<div th:fragment="header" style="display: flex; justify-content: flex-end; align-items: center; padding: 10px 20px; color: white;">
+
+    <div th:if="${session.loginUser != null}" style="color: blue; align-items: center; gap: 15px;">
+        <span>환영합니다, <b th:text="${session.loginUser.name}">사용자</b>님!</span>
+        <a th:href="@{/logout}" 
+           style="color: white; background-color:blue; font-weight: bold; padding: 8px 16px; border: 2px solid white; border-radius: 7px; cursor: pointer;">로그아웃</a>
+    </div>
+</div>
+
+</body>
+</html>
+
+

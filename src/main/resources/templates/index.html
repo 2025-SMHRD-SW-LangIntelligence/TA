@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>우리 동네 지반침하 안전점수</title>
+	<script type="text/javascript"
+		src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cd3f88c99b509eab24270116d671ff65&libraries=services,clusterer"></script>
+	<style>
+		html,
+		body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background-color: white;
+		}
+
+		#wrap {
+			max-width: 1200px;
+			margin: auto;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+		}
+
+		#header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 15px 20px;
+			position: relative;
+			justify-content: space-between;
+			padding: 15px 20px;
+		}
+
+		.menu-icon {
+			width: 25px;
+			height: 20px;
+			background-image:
+				url('data:image/svg+xml;charset=UTF-8,<svg width="25" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="25" height="3" y="0" fill="%23333"/><rect width="25" height="3" y="8" fill="%23333"/><rect width="25" height="3" y="16" fill="%23333"/></svg>');
+			background-size: cover;
+		}
+
+		#container {
+			flex: 1;
+			position: relative;
+		}
+
+		#map {
+			width: 100%;
+			height: 100%;
+		}
+
+		.search-bar {
+			position: absolute;
+			top: 20px;
+			left: 50%;
+			transform: translateX(-50%);
+			align-items: center;
+			background: white;
+			padding: 0px 15px;
+			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+			border: 2px solid #337DFF;
+			border-radius: 18px;
+			z-index: 10;
+			height: 44px;
+			display: flex;
+			justify-content: center;
+			width: 750px;
+		}
+
+		.search-bar input {
+			width: 100%;
+			padding: 10px 12px;
+			border: none;
+			font-size: 14px;
+			outline: none;
+		}
+
+		.btn_search {
+			background: none;
+			border: none;
+			margin-left: 10px;
+			cursor: pointer;
+		}
+
+		.btn_search:hover {
+			opacity: 0.8;
+		}
+
+		.btn_search img {
+			width: 25px;
+			height: 25px;
+		}
+
+		#result-list {
+			position: absolute;
+			top: 66px;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 100%;
+			max-width: 750px;
+			overflow-y: auto;
+			background: white;
+			border: 2px solid #337DFF;
+			border-radius: 0px 0px 18px 18px;
+			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+			z-index: 15;
+			padding: 0px 15px;
+			display: none;
+		}
+
+		#result-list div {
+			padding: 10px;
+			border-bottom: 1px solid #eee;
+			cursor: pointer;
+		}
+
+		#result-list div:hover {
+			background-color: #f0f0f0;
+		}
+
+		.menu-icon {
+			width: 25px;
+			height: 20px;
+			background-image:
+				url('data:image/svg+xml;charset=UTF-8,<svg width="25" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="25" height="3" y="0" fill="%23333"/><rect width="25" height="3" y="8" fill="%23333"/><rect width="25" height="3" y="16" fill="%23333"/></svg>');
+			background-size: cover;
+			cursor: pointer;
+		}
+
+		#menuList {
+			position: absolute;
+			top: 60px;
+			left: 20px;
+			background-color: #f9f9f9;
+			border: 1px solid #ccc;
+			border-radius: 10px;
+			padding: 15px;
+			width: 200px;
+			display: none;
+			z-index: 999;
+		}
+
+		.login-message {
+			font-size: 14px;
+			color: #333;
+			margin-bottom: 10px;
+			font-weight: bold;
+		}
+
+		.login-btn {
+			display: block;
+			width: 100%;
+			padding: 8px;
+			background-color: #337DFF;
+			color: white;
+			border: none;
+			border-radius: 6px;
+			cursor: pointer;
+			margin-bottom: 10px;
+		}
+
+		#menuList ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		#menuList ul li {
+			padding: 8px;
+			cursor: pointer;
+			border-bottom: 1px solid #eee;
+		}
+
+		#menuList ul li:hover {
+			background-color: #eee;
+		}
+
+		.radius_border {
+			border: 1px solid #919191;
+			border-radius: 5px;
+		}
+
+		.custom_location_control {
+			position: absolute;
+			top: 80px;
+			left: 10px;
+			width: 32px;
+			height: 32px;
+			overflow: hidden;
+			z-index: 1;
+			background-color: #f5f5f5;
+		}
+
+		.custom_location_control span {
+			display: block;
+			width: 32px;
+			height: 32px;
+			text-align: center;
+			cursor: pointer;
+		}
+
+		.custom_location_control span img {
+			width: 15px;
+			height: 15px;
+			padding: 9px 0;
+			border: none;
+		}
+
+		.custom_location_control span img:hover {
+			opacity: 0.5;
+		}
+
+		.radius_border {
+			border: 1px solid #919191;
+			border-radius: 5px;
+		}
+
+		#popupOverlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.5);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			z-index: 1000;
+		}
+
+		#popupContent {
+			background: white;
+			padding: 30px;
+			border-radius: 12px;
+			width: 400px;
+			max-width: 80%;
+			text-align: center;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+		}
+
+		#popupContent h2 {
+			margin-top: 0;
+			color: #337DFF;
+		}
+
+		#popupContent button {
+			margin-top: 20px;
+			padding: 8px 16px;
+			background-color: #337DFF;
+			color: white;
+			border: none;
+			border-radius: 6px;
+			cursor: pointer;
+		}
+
+		#popupContent button:hover {
+			background-color: #285fd0;
+		}
+
+		/* 모달 오버레이 */
+		.modal-overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100vh;
+			background: rgba(0, 0, 0, 0.5);
+			z-index: 9999;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.modal-content {
+			width: 350px;
+			background: #fff;
+			overflow: hidden;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+			font-family: 'Segoe UI', sans-serif;
+		}
+
+		.modal-header {
+			background: #1e90ff;
+			color: white;
+			padding: 12px 16px;
+			font-size: 16px;
+			font-weight: bold;
+			display: flex;
+			justify-content: space-between;
+			border-radius: 12px 12px 0px 0px;
+		}
+
+		.modal-close {
+			cursor: pointer;
+			color: red;
+		}
+
+		.modal-body {
+			padding: 16px;
+			font-size: 14px;
+			line-height: 1.5;
+		}
+
+		.modal-body h4 {
+			font-size: 18px;
+			margin-top: 0px;
+			margin-bottom: 0px;
+		}
+
+		.modal-body p {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-block-start: 8px;
+			margin-block-end: 8px;
+		}
+
+		.modal-footer {
+			padding: 10px 16px;
+			text-align: center;
+			background-color: white;
+			border-radius: 0px 0px 12px 12px;
+			padding-top: 0;
+		}
+
+		.modal-footer button {
+			background: #1e90ff;
+			color: white;
+			border: none;
+			border-radius: 6px;
+			padding: 8px 16px;
+			cursor: pointer;
+			width: 100%;
+			font-weight: bold;
+		}
+
+		.modal-data-title {
+			flex-shrink: 0;
+			text-align: left;
+			width : 30%;
+		}
+
+		.modal-data-info {
+			text-align: right;
+			flex: 1;
+		}
+
+		.modal-data {
+			display: inline-block;
+			word-wrap: break-word;
+			white-space: normal;
+			word-break : auto-phrase;
+		}
+
+		#si_info p {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-block-start: 8px;
+			margin-block-end: 8px;
+		}
+
+		.si_title {
+			display: inline-block;
+			word-wrap: break-word;
+			white-space: normal;
+		}
+
+		.modal_slider_dot .dot {
+			width: 12px;
+			height: 12px;
+			background-color: rgb(0, 0, 0, 0.1);
+			display: inline-block;
+			border-radius: 50%;
+			text-indent: -9999px;
+			transition: all 0.3s;
+			margin: 2px;
+			cursor: pointer;
+		}
+
+		.modal_slider_dot .dot.active {
+			background-color: #1e90ff;
+			cursor: pointer;
+		}
+
+		.modal_slider_btn {
+			display: none;
+		}
+
+		.modal_slider_btn a {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 15px;
+			height: 50px;
+			line-height: 50px;
+			text-align: center;
+			background-color: #1e90ff;
+			opacity: 0.5;
+			text-decoration: none;
+			color: white;
+			font-size: 20px;
+			font-weight: bold;
+		}
+
+		.modal_slider_btn a:hover {
+			cursor: pointer;
+			opacity: 1.0;
+		}
+
+		.modal_slider_btn a.prev {
+			left: 0;
+		}
+
+		.modal_slider_btn img {
+			width: 50px;
+			height: 50px;
+			background-color: white;
+		}
+
+		.modal_slider_btn a.next {
+			right: 0;
+		}
+
+		.modal_inner {
+			flex-wrap: wrap;
+			position: relative;
+		}
+
+		.modal_inner:hover .modal_slider_btn {
+			display: block;
+		}
+
+		.modal-content {
+			display: none;
+		}
+
+		.legend-box {
+			position: absolute;
+			bottom: 50px;
+			left: 30px;
+			background: white;
+			border: 1px solid #ccc;
+			border-radius: 10px;
+			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+			padding: 10px 12px;
+			font-size: 13px;
+			z-index: 100;
+			width: 150px;
+		}
+
+		.legend-title {
+			font-weight: bold;
+			border-bottom: 1px solid #ddd;
+			padding-bottom: 5px;
+			margin-bottom: 8px;
+			color: #333;
+		}
+
+		.legend-box ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+
+		.legend-box li {
+			display: flex;
+			align-items: center;
+			margin-bottom: 6px;
+		}
+
+		.legend-icon {
+			width: 10px;
+			height: 10px;
+			border-radius: 50%;
+			display: inline-block;
+			margin-right: 8px;
+		}
+
+		/* 색상 정의 */
+		.legend-icon.red {
+			background-color: #FF4C4C;
+		}
+
+		.legend-icon.orange {
+			background-color: #FFA500;
+		}
+
+		.legend-icon.yellow {
+			background-color: #FFD700;
+		}
+
+		.legend-icon.green {
+			background-color: #32CD32;
+		}
+	</style>
+</head>
+
+<body>
+
+	<!-- 팝업 오버레이 -->
+	<div id="popupOverlay">
+		<div id="popupContent">
+			<h2>안전신고 포상제 안내</h2>
+			<p>생활 속 위험 신고하고 포상 받으세요 </p>
+			<p>지반침하나 보도 파손 등 안전 위험 요소를 신고시 </p>
+			<p>포상금<strong><span style="color:red">(최대 30만원)</span></strong>이 지급되는 제도가 운영 중 입니다</p>
+			<p><strong>지금 확인해 보세요!!</strong></p>		
+			<button onclick="closePopup()">닫기</button>
+			<button onclick="location.href='/reward'">자세히 보기</button>
+		</div>
+	</div>
+
+	<div id="wrap">
+		<div id="header">
+			<div class="menu-icon" onclick="toggleMenu()"></div>
+			<div id="menuList">
+				<div class="login-message" th:if="${userName != null}">
+					<span th:text="${userName} + '님'"></span>
+				</div>
+				<div class="login-message" th:if="${userName == null}">로그인이
+					필요합니다.</div>
+
+
+				<button class="login-btn" th:if="${userName == null}" onclick="location.href='/login'">로그인</button>
+				<ul>
+					<li onclick="location.href='/report/list'">제보게시판</li>
+					<li onclick="location.href='/reward'">신고 포상금 제도</li>
+					<li onclick="location.href='/statistics'">데이터 통계</li>
+					<li onclick="location.href='/response'">대처방법</li>
+					<li onclick="location.href='/service'">서비스 설명</li>
+					<li onclick="location.href='/notice'">공지사항</li>
+
+				</ul>
+				<button class="login-btn" th:if="${userName != null}" onclick="location.href='/logout'">로그아웃</button>
+
+
+			</div>
+		</div>
+
+		<div id="container">
+			<div id="map">
+				<div class="search-bar">
+					<input type="text" placeholder="주소를 입력해주세요">
+					<button type="submit" class="btn_search">
+						<img src="img/search_btn.png" alt="검색 버튼">
+					</button>
+				</div>
+				<div id="result-list"></div>
+			</div>
+			<!--  -->
+			<div class="legend-box">
+				<div class="legend-title">싱크홀 깊이</div>
+				<ul>
+					<li><span class="legend-icon red"></span>2.0m 이상</li>
+					<li><span class="legend-icon orange"></span>1.5m ~ 2.0m</li>
+					<li><span class="legend-icon yellow"></span>1.0m ~ 1.5m</li>
+					<li><span class="legend-icon green"></span>1.0m 미만</li>
+				</ul>
+			</div>
+
+			<!-- 사용자 위치 -->
+			<div class="custom_location_control radius_border">
+				<span onclick="user_location()"> <img src="img/target.png">
+				</span>
+			</div>
+
+			<!-- 모달 오버레이 -->
+			<div id="sinkholeModal" class="modal-overlay" style="display: none;">
+				<div class="modal_inner">
+					<div class="modal-header">
+						<span>싱크홀 지도 상세 정보 (1 / 2) </span>
+						<span class="modal-close" onclick="closeSinkholeModal()">❌</span>
+					</div>
+					<div class="modal-container">
+						<div class="modal-content m1">
+							<div class="modal-body">
+
+								<h4>기본 정보</h4>
+								<p>
+									<span class="modal-data-title">
+										<strong>발생 위치 :</strong>
+									</span>
+									<span class="modal-data-info">
+										<span id="modal-location" class="modal-data"></span>
+									</span>
+								</p>
+
+								<p>
+									<span class="modal-data-title">
+										<strong>발생 일자 :</strong>
+									</span>
+									<span class="modal-data-info">
+										<span id="modal-date" class="modal-data"></span>
+									</span>
+								</p>
+								<hr>
+
+								<h4>싱크홀 규모</h4>
+								<p>
+									<span class="modal-data-title">
+										<span>넓이 / 연장 / 깊이 </span>
+									</span>
+									<span class="modal-data-info">
+										<span id="modal-size" class="modal-data"></span>
+									</span>
+								</p>
+								<hr>
+
+								<h4>피해 사진</h4>
+								<img id="modal-image" src="" alt="싱크홀 이미지"
+									style="width: 100%; border-radius: 8px; margin-bottom: 10px;" />
+								<hr>
+
+								<h4>발생 원인</h4>
+								<p style="color: red;" id="modal-detail"></p>
+								<hr>
+							</div>
+						</div>
+						<div class="modal-content m2">
+							<div class="modal-body">
+								<h4>지질</h4>
+								<p>
+									<span class="modal-data-title">
+										<span id="modal-bedType"></span>
+									</span>
+									<span class="modal-data-info">
+										<span id="modal-bedInfo" class="modal-data"></span>
+									</span>
+								</p>
+								<hr>
+
+								<h4>피해 상황</h4>
+								<p>
+									<span class="modal-data-title">
+										<strong>사망자 수 :</strong>
+									</span>
+									<span class="modal-data-info">
+										<span id="modal-death" class="modal-data"></span>
+									</span>
+								</p>
+								<p>
+									<span class="modal-data-title">
+										<strong>부상자 수 :</strong>
+									</span>
+									<span class="modal-data-info">
+										<span id="modal-injury" class="modal-data"></span>
+									</span>
+								</p>
+								<p>
+									<span class="modal-data-title">
+										<strong>차량 피해 :</strong>
+									</span>
+									<span class="modal-data-info">
+										<span id="modal-vehicle" class="modal-data"></span>
+									</span>
+								</p>
+								<p>
+									<span class="modal-data-title">
+										<strong>관련 뉴스 URL :</strong>
+									</span>
+									<span class="modal-data-info">
+										<a id="modal-news" class="modal-data" href="#" target="_blank">바로가기</a>
+									</span>
+								</p>
+								<hr>
+
+								<h4>처리 상황</h4>
+								<p>
+									<span class="modal-data-title">
+										<strong>처리 상태 :</strong>
+									</span>
+									<span class="modal-data-info">
+										<span id="modal-status" class="modal-data"></span>
+									</span>
+								</p>
+								<p>
+									<span class="modal-data-title">
+										<strong>처리 방법 :</strong>
+									</span>
+									<span class="modal-data-info">
+										<span id="modal-method" class="modal-data"></span>
+									</span>
+								</p>
+								<hr>
+
+							</div>
+						</div>
+						<div class="modal_slider_btn">
+							<a href="" class="prev" title="이전"> &lt </a>
+							<a href="#" class="next" title="다음"> &gt </a>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="modal_slider_dot"></div>
+						<button onclick="closeSinkholeModal()">닫기</button>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// 메뉴 버튼
+		function toggleMenu() {
+			const menu = document.getElementById("menuList");
+			menu.style.display = (menu.style.display === "block") ? "none" : "block";
+		}
+
+		let user_lat = 37.5665
+		let user_lng = 126.9780
+
+
+
+		const container = document.getElementById('map');
+		const mapOptions = {
+			center: new kakao.maps.LatLng(user_lat, user_lng),
+			level: 4
+		};
+		const map = new kakao.maps.Map(container, mapOptions);
+		// 사용자 위치 정보 수집
+		user_location();
+
+
+		const input = document.querySelector('.search-bar input');
+		const searchBtn = document.querySelector('.btn_search');
+		const resultList = document.getElementById('result-list');
+		const geocoder = new kakao.maps.services.Geocoder();
+		const ps = new kakao.maps.services.Places();
+		const search_bar = document.querySelector('.search-bar')
+
+		let markers = [];
+
+		// 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+		var zoomControl = new kakao.maps.ZoomControl();
+		map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+
+		// 마커 지우기
+		function clearMarkers() {
+			markers.forEach(marker => marker.setMap(null));
+			markers = [];
+		}
+
+		function displayResults(data) {
+			resultList.innerHTML = '';
+			clearMarkers();
+
+			if (!data.length) {
+				resultList.style.display = 'none';
+				return;
+			}
+
+			data.forEach(place => {
+				const item = document.createElement('div');
+				item.textContent = place.place_name;
+				item.addEventListener('click', () => {
+					const coords = new kakao.maps.LatLng(place.y, place.x);
+					map.setCenter(coords);
+
+					clearMarkers();
+					const marker = new kakao.maps.Marker({
+						map: map,
+						position: coords
+					});
+					markers.push(marker);
+
+					resultList.style.display = 'none';
+					search_bar.style.borderRadius = "18px"
+					input.value = item.textContent
+				});
+				resultList.appendChild(item);
+			});
+
+			resultList.style.display = 'block';
+		}
+
+		function searchPlaces() {
+			search_bar.style.borderRadius = "18px 18px 0px 0px"
+
+			const keyword = input.value.trim();
+			if (!keyword) {
+				resultList.style.display = 'none';
+				search_bar.style.borderRadius = "18px";
+				return;
+			}
+			ps.keywordSearch(keyword, (data, status) => {
+				if (status === kakao.maps.services.Status.OK && data.length > 0) {
+					displayResults(data);
+				} else {
+					resultList.innerHTML = '<div style="padding: 10px; color: gray; text-align: center;">검색 결과가 없습니다.</div>';
+					resultList.style.display = 'block';
+					search_bar.style.borderRadius = "18px 18px 0px 0px";
+					clearMarkers();
+				}
+			});
+		}
+
+
+		// 버튼 클릭으로 검색
+		searchBtn.addEventListener('click', () => {
+			searchPlaces();
+		});
+
+		// 입력 중 자동완성 검색
+		input.addEventListener('keyup', (e) => {
+			searchPlaces();
+
+			if (e.key === 'Enter') {
+				resultList.style.display = 'none';
+			}
+		});
+
+		function user_location() {
+			let userLocation = navigator.geolocation.getCurrentPosition((position) => {
+				map.setCenter(new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude))
+			})
+		}
+
+		// 팝업 닫기
+		function closePopup() {
+			const popup = document.getElementById('popupOverlay');
+			popup.style.display = 'none';
+		}
+
+		// 오버레이 전역 선언
+		let currentOverlay = null;
+
+		function fetchMarkersInBounds() {
+			const bounds = map.getBounds();
+			const sw = bounds.getSouthWest();
+			const ne = bounds.getNorthEast();
+
+			const url = `/api/occur/within?swLat=${sw.getLat()}&swLng=${sw.getLng()}&neLat=${ne.getLat()}&neLng=${ne.getLng()}`;
+
+			fetch(url)
+				.then(res => res.json())
+				.then(data => {
+					// 기존 마커 제거
+					markers.forEach(m => m.setMap(null));
+					markers = [];
+
+					// 새로운 마커 생성
+					data.forEach(d => {
+						dth = parseFloat(d.sinkDepth)
+						if (dth >= 2.0) {
+							marker_color = "red"
+						}else if (1.5 <= dth && dth < 2.0){
+							marker_color = "orange"
+						}else if (1.0 <= dth && dth < 1.5){
+							marker_color = "yellow"
+						}else {
+							marker_color = "green"
+						}
+
+						const marker_img = new kakao.maps.MarkerImage(
+							`/img/markers/${marker_color}_marker.png`,
+							new kakao.maps.Size(35, 35)
+						)
+						const marker = new kakao.maps.Marker({
+							map: map,
+							position: new kakao.maps.LatLng(d.latitude, d.longitude),
+							title: d.location,
+							image: marker_img
+						});
+
+
+
+
+
+						kakao.maps.event.addListener(marker, 'click', function () {
+							if (currentOverlay) currentOverlay.setMap(null);
+
+							const content = document.createElement('div')
+
+							content.innerHTML = `
+							<div style="width: 300px; border-radius:10px; box-shadow:0px 2px 6px rgba(0,0,0,0.3); background:white; font-family:sans-serif;">
+			                	<div style="background:#1e90ff; color:white; padding:10px; border-radius:10px 10px 0 0; font-weight:bold; display:flex; justify-content:space-between;">
+			                  		<span class="si_title">${d.location}</span>
+			                  		<span onclick="overlayClose()" style="cursor:pointer;">❌</span>
+			                	</div>
+			                	<div id="si_info" style="padding:10px; font-size:14px;">
+									<p>
+			                		<span class="modal-data-title">
+										<strong>발생일 : </strong>
+									</span>
+									<span class="modal-data-info modal-data">${d.sagoDate}</span><br>
+									</p>
+
+									<p>
+			                		<span class="modal-data-title">
+										<strong style="color:red;">원인 :</strong>
+									</span>
+									<span class="modal-data-info modal-data">${d.sagoDetail}</span><br> 
+									</p>
+
+									<p>
+									<span class="modal-data-title">
+										<strong>싱크홀 규모 :</strong>
+									</span>
+									<span class="modal-data-info modal-data">${d.sinkWidth}m / ${d.sinkExtend}m / ${d.sinkDepth}m</span><br>
+									</p>
+			                  	<button id="openDetail" style="width:100%; margin-top:10px; padding:8px; background:#1e90ff; border:none; color:white; border-radius:6px; cursor:pointer;">상세보기</button>
+			                	</div>
+			              	</div>`;
+
+							currentOverlay = new kakao.maps.CustomOverlay({
+								content: content,
+								position: marker.getPosition(),
+								xAnchor: 0.5,
+								yAnchor: 1.18,
+								zindex: 3
+							});
+
+							currentOverlay.setMap(map);
+							currentOverlay.setZIndex("inherit");
+
+							// 모달 열기 버튼
+							content.querySelector("#openDetail").addEventListener("click", () => {
+								openSinkholeModal(d);
+							});
+						});
+						markers.push(marker);
+					});
+				});
+		}
+
+		// 지도 이동 또는 확대/축소 시마다 마커 갱신
+		kakao.maps.event.addListener(map, 'idle', fetchMarkersInBounds);
+
+		// 최초 로딩 시 실행
+		fetchMarkersInBounds();
+
+		// 오버레이 닫기 함수
+		function overlayClose() {
+			if (currentOverlay) currentOverlay.setMap(null);
+		}
+
+		// 발생지역(마커) 상세보기)
+		function openSinkholeModal(data) {
+			const url = `/api/occur/bed?bedId=${data.bedId}`;
+			fetch(url)
+				.then(res => res.json())
+				.then(bed_data => {
+					overlayClose()
+					document.getElementById('modal-location').textContent = data.location;
+					document.getElementById('modal-date').textContent = data.sagoDate;
+					document.getElementById('modal-size').textContent = `${data.sinkWidth}m / ${data.sinkExtend}m / ${data.sinkDepth}m`;
+
+					document.getElementById('modal-bedType').textContent = bed_data[0].bedType
+					document.getElementById('modal-bedInfo').textContent = bed_data[0].bedInfo;
+
+					document.getElementById('modal-detail').textContent = data.sagoDetail;
+
+					const imageEl = document.getElementById('modal-image');
+					if (data.sagoImgUrl && data.sagoImgUrl !== 'nan') {
+						imageEl.src = data.sagoImgUrl;
+						imageEl.style.display = 'block';
+					} else {
+						imageEl.style.display = 'none';
+					}
+
+					document.getElementById('modal-death').textContent = data.deathCnt + "대";
+					document.getElementById('modal-injury').textContent = data.injuryCnt + "대";
+					document.getElementById('modal-vehicle').textContent = data.vehicleCnt + "대";
+					document.getElementById('modal-news').href = data.sagoNewsUrl;
+					document.getElementById('modal-news').textContent = data.sagoNewsUrl;
+
+					document.getElementById('modal-status').textContent = `${data.trStatus} (${data.trFnDate})`;
+					document.getElementById('modal-method').textContent = data.trMethod;
+
+					document.getElementById('sinkholeModal').style.display = 'flex';
+				})
+			document.getElementById('sinkholeModal').style.display = 'flex';
+
+			// 슬라이더 초기화
+			initModalSlider();
+		}
+
+		function closeSinkholeModal() {
+			document.getElementById('sinkholeModal').style.display = 'none';
+		}
+
+		// 모달 페이지 전환
+		let currentPage = 0; // 0: m1, 1: m2
+
+		function showModalPage(index) {
+			const pages = document.querySelectorAll(".modal-content");
+			const dots = document.querySelectorAll(".modal_slider_dot .dot");
+			const title = document.querySelectorAll("#sinkholeModal > div.modal_inner > div.modal-header > span:nth-child(1)");
+			title[0].innerText = "싱크홀 지도 상세 정보 (" + (index + 1) + " / 2)"
+
+			// 페이지 보여주기
+			pages.forEach((page, i) => {
+				page.style.display = (i === index) ? "block" : "none";
+			});
+
+			// Dot 표시 업데이트
+			dots.forEach((dot, i) => {
+				dot.classList.toggle("active", i === index);
+			});
+
+			currentPage = index;
+		}
+
+		// 이전 버튼
+		document.querySelector(".modal_slider_btn .prev").addEventListener("click", function (e) {
+			e.preventDefault();
+			const newIndex = (currentPage === 0) ? 1 : 0;
+			showModalPage(newIndex);
+		});
+
+		// 다음 버튼
+		document.querySelector(".modal_slider_btn .next").addEventListener("click", function (e) {
+			e.preventDefault();
+			const newIndex = (currentPage === 1) ? 0 : 1;
+			showModalPage(newIndex);
+		});
+
+		// 초기화 시 dot 생성 및 첫 페이지 표시
+		function initModalSlider() {
+			const dotContainer = document.querySelector(".modal_slider_dot");
+			dotContainer.innerHTML = ""; // 기존 제거
+			for (let i = 0; i < 2; i++) {
+				const dot = document.createElement("span");
+				dot.classList.add("dot");
+				if (i === 0) dot.classList.add("active");
+				dot.addEventListener("click", () => showModalPage(i));
+				dotContainer.appendChild(dot);
+			}
+			showModalPage(0);
+		}
+		
+	</script>
+</body>
+
+</html>

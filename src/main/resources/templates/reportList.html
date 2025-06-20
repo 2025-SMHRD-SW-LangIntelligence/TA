@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>제보 게시판</title>
+
+<!-- ✅ Bootstrap CSS -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+
+<!-- ✅ 사용자 정의 스타일 -->
+<style>
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	background-color: #f7f9fc;
+	padding: 20px;
+	color: #333;
+}
+
+h2 {
+	color: #337DFF;
+	margin-bottom: 30px;
+	text-align: center;
+}
+
+table {
+	width: 100%;
+	margin: auto;
+	border-collapse: collapse;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	background: white;
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+th, td {
+	padding: 12px 15px;
+	text-align: left;
+}
+
+thead {
+	background-color: #337DFF;
+	color: white;
+}
+
+tbody tr:nth-child(even) {
+	background-color: #f2f7ff;
+}
+
+tbody tr:hover {
+	background-color: #dbe9ff;
+	cursor: pointer;
+}
+
+.btn-custom {
+	background-color: #337DFF;
+	color: white;
+	border: none;
+	padding: 8px 16px;
+	border-radius: 6px;
+	transition: background 0.3s ease;
+}
+
+.btn-custom:hover {
+	background-color: #265dc3;
+}
+
+.search-form {
+	max-width: 600px;
+	margin: 0 auto 30px;
+	display: flex;
+	gap: 10px;
+	justify-content: center;
+}
+
+.write-btn {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 20px;
+}
+</style>
+</head>
+
+<body>
+
+	<!-- ✅ header fragment -->
+	<div th:replace="~{header :: header}"></div>
+
+	<main class="container">
+		<h2>📢 제보 게시판</h2>
+
+		<!-- ✅ 검색 폼 -->
+		<form class="search-form" onsubmit="searchReport(event)">
+			<select class="form-select" id="searchType" name="searchType"
+				style="max-width: 150px;">
+				<option value="content">내용</option>
+				<option value="id">작성자</option>
+				<option value="location">위치</option>
+			</select> <input type="text" name="keyword" id="keyword" class="form-control"
+				placeholder="검색어를 입력하세요" style="max-width: 300px;">
+			<button type="submit" class="btn btn-custom">검색</button>
+		</form>
+
+		<!-- ✅ 게시판 테이블 -->
+		<table class="table">
+			<thead>
+				<tr>
+					<th>번호</th>
+					<th>내용</th>
+					<th>작성자</th>
+					<th>작성일</th>
+					<th>위치</th>
+				</tr>
+			</thead>
+			<tbody id="reportTable">
+				<tr th:each="report, stat : ${reports}"
+					th:onclick="|location.href='@{/report/detail/{id}(id=${report.reportId})}'|"
+					style="cursor: pointer;">
+					<td th:text="${currentPage * 10 + stat.index + 1}">번호</td>
+					<td th:text="${report.content}">싱크홀 발생 의심</td>
+					<td th:text="${report.maskedId}">user01</td>
+					<td th:text="${report.writeDay}">2025-06-19</td>
+					<td th:text="${report.location}">서울 강남구</td>
+					<td><img th:if="${report.imgPath != null}"
+						th:src="@{${report.imgPath}}"
+						style="max-width: 100px; max-height: 100px;" /></td>
+				</tr>
+			</tbody>
+
+
+
+		</table>
+
+		<!-- ✅ 페이지네이션 -->
+		<div class="d-flex justify-content-center mt-4">
+			<nav>
+				<ul class="pagination">
+					<li class="page-item"
+						th:classappend="${currentPage == 0} ? 'disabled'"><a
+						class="page-link"
+						th:href="@{/report/list(page=${currentPage - 1}, keyword=${keyword})}">이전</a>
+					</li>
+
+					<li class="page-item"
+						th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+						th:classappend="${pageNum == currentPage} ? 'active'"><a
+						class="page-link"
+						th:href="@{/report/list(page=${pageNum}, keyword=${keyword})}"
+						th:text="${pageNum + 1}">1</a></li>
+
+					<li class="page-item"
+						th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+						<a class="page-link"
+						th:href="@{/report/list(page=${currentPage + 1}, keyword=${keyword})}">다음</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+
+
+
+
+		<!-- ✅ 제보 버튼 -->
+		<div class="write-btn">
+			<a th:href="@{/report/new}" class="btn btn-success"
+				th:if="${session.loginUser != null}">✏️ 제보하기</a> <a
+				th:if="${session.loginUser == null}" th:href="@{/login}"
+				class="btn btn-outline-secondary">🔐 로그인 후 제보</a>
+
+		</div>
+		<!-- 로그인 안 된 상태일 때 버튼 누르면 로그인 페이지 이동 + 메시지 표시 -->
+		<div th:if="${errorMessage}" class="alert alert-danger"
+			th:text="${errorMessage}"></div>
+
+	</main>
+
+	<!-- ✅ footer fragment -->
+	<div th:replace="~{footer :: footer}"></div>
+
+	<!-- ✅ 스크립트 로드 -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+	<!-- ✅ 검색 JS -->
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script>
+function searchReport(event) { // 키워드 검색 함수
+    event.preventDefault();
+
+    const type = document.getElementById("searchType").value;
+    const keyword = document.getElementById("keyword").value.trim();
+
+    if (!keyword) {
+        alert("검색어를 입력하세요.");
+        return;
+    }
+
+    $.ajax({
+        url: "/report/search/json",  // json으로 연결 
+        type: "GET",
+        data: { type: type, keyword: keyword },
+        success: function(data) {
+            const tableBody = $("#reportTable");
+            tableBody.empty();
+
+            if (!data || data.length === 0) {
+                tableBody.append(`<tr><td colspan="6" class="text-center">검색 결과가 없습니다.</td></tr>`);
+            } else {
+                data.forEach(function(report) {
+                    const imageUrl = report.imgPath 
+                        ? report.imgPath 
+                        : (report.images && report.images.length > 0 ? report.images[0].imgUrl : '');
+
+                    const row = `
+                        <tr onclick="location.href='/report/detail/${report.reportId}'" style="cursor: pointer;">
+                            <td>${report.reportId}</td>
+                            <td>${report.content}</td>
+                            <td>${report.id}</td>   
+                            <td>${report.writeDay}</td>
+                            <td>${report.location}</td>
+                            <td>${imageUrl ? `<img src="${imageUrl}" style="max-width: 100px; max-height: 100px;" />` : ''}</td>
+                        </tr>`;
+                    tableBody.append(row);
+                });
+            }
+        },
+        error: function() {
+            alert("검색 중 오류가 발생했습니다.");
+        }
+    });
+
+}
+</script>
+
+
+
+</body>
+</html>

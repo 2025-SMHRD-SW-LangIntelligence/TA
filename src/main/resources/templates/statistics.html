@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>지반침하 차트 대시보드</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f7fa;
+      color: #222;
+    }
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 40px;
+      gap: 40px;
+      align-items: center;
+    }
+    .top-charts {
+      display: flex;
+      flex-direction: row;
+      gap: 40px;
+      justify-content: center;
+    }
+    .chart-box {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+      width: 600px;
+      text-align: center;
+    }
+    h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #004488;
+    }
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+    select {
+      padding: 8px 12px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="top-charts">
+      <!-- 연도별 그래프 -->
+      <div class="chart-box">
+        <h2>연도별 지반침하 발생건수</h2>
+        <canvas id="barChart"></canvas>
+      </div>
+      <!-- 지역별 침하 원인 -->
+      <div class="chart-box">
+        <h2>지역별 침하 원인</h2>
+        <select id="regionSelect" onchange="updateChart()">
+          <option value="서울특별시" selected>서울특별시</option>
+          <option value="부산광역시">부산광역시</option>
+          <option value="대구광역시">대구광역시</option>
+          <option value="인천광역시">인천광역시</option>
+          <option value="광주광역시">광주광역시</option>
+          <option value="대전광역시">대전광역시</option>
+          <option value="울산광역시">울산광역시</option>
+          <option value="세종특별자치시">세종특별자치시</option>
+          <option value="경기도">경기도</option>
+          <option value="강원특별자치도">강원특별자치도</option>
+          <option value="충청북도">충청북도</option>
+          <option value="충청남도">충청남도</option>
+          <option value="전북특별자치도">전북특별자치도</option>
+          <option value="전라남도">전라남도</option>
+          <option value="경상북도">경상북도</option>
+          <option value="경상남도">경상남도</option>
+          <option value="제주특별자치도">제주특별자치도</option>
+        </select>
+        <canvas id="doughnutChart"></canvas>
+      </div>
+    </div>
+
+    <!-- 계절별 그래프 -->
+    <div class="chart-box" style="margin-top: -20px;">
+      <h2>계절별 지반침하 발생건수</h2>
+      <select id="seasonRegionSelect" onchange="updateSeasonChart()">
+        <option value="서울특별시" selected>서울특별시</option>
+        <option value="부산광역시">부산광역시</option>
+        <option value="대구광역시">대구광역시</option>
+        <option value="인천광역시">인천광역시</option>
+        <option value="광주광역시">광주광역시</option>
+        <option value="대전광역시">대전광역시</option>
+        <option value="울산광역시">울산광역시</option>
+        <option value="세종특별자치시">세종특별자치시</option>
+        <option value="경기도">경기도</option>
+        <option value="강원특별자치도">강원특별자치도</option>
+        <option value="충청북도">충청북도</option>
+        <option value="충청남도">충청남도</option>
+        <option value="전북특별자치도">전북특별자치도</option>
+        <option value="전라남도">전라남도</option>
+        <option value="경상북도">경상북도</option>
+        <option value="경상남도">경상남도</option>
+        <option value="제주특별자치도">제주특별자치도</option>
+      </select>
+      <canvas id="seasonChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    // 연도별 데이터
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+        datasets: [{
+          label: '발생 건수',
+          data: [338, 193, 284, 142, 177, 162, 102],
+          backgroundColor: '#337DFF',
+          borderRadius: 5,
+          barThickness: 40
+        }]
+      },
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: '총합: 1,398건',
+            font: { size: 16 },
+            color: '#333'
+          },
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 50, color: '#444' },
+            title: {
+              display: true,
+              text: '발생 건수',
+              color: '#444',
+              font: { weight: 'bold' }
+            }
+          },
+          x: {
+            ticks: { color: '#444' }
+          }
+        }
+      }
+    });
+
+    // 지역별 원인 데이터
+    const labels = ['상수관 손상', '하수관 손상', '기타매설물 손상', '굴착공사 부실', '다짐(되메우기) 불량', '상하수관공사 부실', '기타매설공사 부실', '기타'];
+    const dataMap = {
+      '서울특별시': [14, 51, 7, 15, 20, 3, 1, 4],
+      '부산광역시': [14, 51, 8, 5, 22, 3, 4, 27],
+      '대구광역시': [3, 5, 1, 0, 4, 1, 1, 5],
+      '인천광역시': [7, 12, 0, 2, 12, 0, 0, 13],
+      '광주광역시': [1, 109, 9, 1, 28, 1, 1, 6],
+      '대전광역시': [1, 62, 2, 0, 4, 4, 0, 1],
+      '울산광역시': [1, 5, 1, 0, 5, 0, 0, 5],
+      '세종특별자치시': [1, 4, 2, 1, 1, 0, 0, 1],
+      '경기도': [10, 120, 22, 45, 68, 10, 13, 17],
+      '강원특별자치도': [24, 22, 4, 16, 29, 4, 2, 10],
+      '충청북도': [3, 83, 8, 1, 4, 4, 3, 7],
+      '충청남도': [3, 4, 2, 2, 4, 2, 0, 4],
+      '전북특별자치도': [0, 55, 9, 0, 4, 1, 0, 8],
+      '전라남도': [1, 7, 5, 7, 8, 2, 0, 13],
+      '경상북도': [1, 19, 3, 7, 32, 3, 1, 9],
+      '경상남도': [2, 21, 5, 1, 6, 0, 2, 31],
+      '제주특별자치도': [0, 8, 2, 0, 0, 2, 0, 1],
+    };
+    const doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
+    const colors = ['#4e79a7', '#f28e2c', '#e15759', '#76b7b2', '#59a14f', '#edc949', '#af7aa1', '#ff9da7'];
+    let doughnutChart = new Chart(doughnutCtx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: dataMap['서울특별시'],
+          backgroundColor: colors
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: '65%',
+        plugins: {
+          legend: { position: 'bottom' },
+          subtitle: {
+            display: true,
+            text: '서울특별시 지반침하 전체건수: 115건',
+            color: '#333',
+            font: { size: 18, weight: 'bold' },
+            padding: { bottom: 10 }
+          }
+        }
+      }
+    });
+
+    function updateChart() {
+      const region = document.getElementById('regionSelect').value;
+      const total = dataMap[region].reduce((a, b) => a + b, 0);
+      doughnutChart.data.datasets[0].data = dataMap[region];
+      doughnutChart.options.plugins.subtitle.text = `${region} 지반침하 전체건수: ${total}건`;
+      doughnutChart.update();
+    }
+
+    // 계절별 데이터
+    const seasonData = {
+      '서울특별시': [25, 50, 23, 17],
+      '부산광역시': [43, 70, 11, 10],
+      '대구광역시': [9, 10, 1, 0],
+      '인천광역시': [5, 32, 3, 6],
+      '광주광역시': [39, 90, 14, 13],
+      '대전광역시': [33, 31, 9, 1],
+      '울산광역시': [5, 6, 4, 2],
+      '세종특별자치시': [5, 2, 2, 1],
+      '경기도': [78, 144, 53, 30],
+      '강원특별자치도': [27, 49, 16, 19],
+      '충청북도': [39, 60, 8, 6],
+      '충청남도': [2, 11, 7, 1],
+      '전북특별자치도': [15, 45, 11, 6],
+      '전라남도': [9, 18, 8, 8],
+      '경상북도': [24, 24, 14, 13],
+      '경상남도': [31, 22, 8, 7],
+      '제주특별자치도': [1, 8, 4, 0],
+    };
+
+    const seasonCtx = document.getElementById('seasonChart').getContext('2d');
+    let seasonChart = new Chart(seasonCtx, {
+      type: 'bar',
+      data: {
+        labels: ['봄', '여름', '가을', '겨울'],
+        datasets: [{
+          label: '발생 건수',
+          data: seasonData['서울특별시'],
+          backgroundColor: ['#66aaff', '#5599ff', '#4488ff', '#3377ff'],
+          borderRadius: 5,
+          barThickness: 40
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: '서울특별시 계절별 지반침하 발생건수'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 10, color: '#444' },
+            title: {
+              display: true,
+              text: '발생 건수',
+              color: '#444',
+              font: { weight: 'bold' }
+            }
+          },
+          x: {
+            ticks: { color: '#444' }
+          }
+        }
+      }
+    });
+
+    function updateSeasonChart() {
+      const selectedRegion = document.getElementById('seasonRegionSelect').value;
+      seasonChart.data.datasets[0].data = seasonData[selectedRegion];
+      seasonChart.options.plugins.title.text = `${selectedRegion} 계절별 지반침하 발생건수`;
+      seasonChart.update();
+    }
+  </script>
+</body>
+</html>

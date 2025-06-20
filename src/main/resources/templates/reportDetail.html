@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>제보 상세</title>
+<style>
+body {
+	font-family: 'Segoe UI', sans-serif;
+	background-color: #f5f7fa;
+	padding: 30px;
+}
+
+.card {
+	background-color: #fff;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	padding: 24px;
+	max-width: 600px;
+	margin: auto;
+}
+
+.card h2 {
+	margin-bottom: 20px;
+	color: #333;
+}
+
+.card p {
+	margin: 10px 0;
+	color: #444;
+}
+
+.label {
+	font-weight: bold;
+	color: #666;
+}
+
+.image-container {
+	margin-top: 20px;
+	text-align: center;
+}
+
+.image-container img {
+	max-width: 100%;
+	max-height: 300px;
+	border-radius: 8px;
+	border: 1px solid #ddd;
+}
+
+.no-image {
+	color: #999;
+	font-style: italic;
+}
+</style>
+</head>
+<body>
+	<div class="card">
+		<h2>📸 제보 상세</h2>
+
+		<p>
+			<span class="label">내용:</span> <span th:text="${report.content}">내용
+				없음</span>
+		</p>
+		<p>
+			<span class="label">작성자:</span> <span th:text="${report.maskedId}">작성자
+				없음</span>
+		</p>
+		<p>
+			<span class="label">날짜:</span> <span th:text="${report.writeDay}">날짜
+				없음</span>
+		</p>
+		<p>
+			<span class="label">위치:</span> <span th:text="${report.location}">위치
+				없음</span>
+		</p>
+
+		<!-- ✅ 본문 아래 수정/삭제 버튼 (글 작성자만 보임) -->
+		
+		<div
+			th:if="${session.loginUser != null and session.loginUser.username == report.id}"
+			style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;"
+			class="d-flex gap-2">
+
+			<a th:href="@{/report/edit/{id}(id=${report.reportId})}"
+				class="btn btn-primary">✏️ 수정</a>
+					<!-- 📍 페이지 가장 바깥쪽(본문 내용 아래)에 위치 -->
+			<form th:action="@{/report/delete/{id}(id=${report.reportId})}"
+				method="post">
+				<button type="submit" class="btn btn-danger">🗑 삭제</button>
+			</form>
+		</div>
+
+
+		<div class="image-container">
+			<div th:if="${report.images != null and !report.images.isEmpty()}">
+				<img th:if="${report.images[0] != null}"
+					th:src="@{${report.images[0].imgUrl}}"
+					style="max-width: 200px; max-height: 200px; margin-bottom: 10px;" />
+
+			</div>
+
+			<div class="no-image"
+				th:if="${report.images == null or report.images.isEmpty()}">
+				업로드된 이미지가 없습니다.</div>
+
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 - Miku Demo</title>
+    <style>
+        /* 기존 스타일 유지 */
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; color: #333; }
+        h1 { color: #007bff; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .announcement-list { margin-top: 20px; }
+        .announcement-item { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f9f9f9; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); }
+        .announcement-item h3 { margin-top: 0; color: #333; }
+        .announcement-item h3 a { text-decoration: none; color: #007bff; }
+        .announcement-item h3 a:hover { text-decoration: underline; }
+        .announcement-item .date { color: #777; font-size: 0.9em; margin-bottom: 10px; display: block; }
+        .announcement-item .summary { font-size: 1em; color: #555; }
+        .pagination { margin-top: 30px; text-align: center; }
+        .pagination a { display: inline-block; padding: 8px 15px; margin: 0 5px; border: 1px solid #007bff; border-radius: 5px; text-decoration: none; color: #007bff; transition: background-color 0.3s ease, color 0.3s ease; }
+        .pagination a:hover, .pagination a.active { background-color: #007bff; color: white; }
+    </style>
+</head>
+<body>
+    <h1>공지사항</h1>
+
+    <div class="announcement-list" id="announcement-list">
+        <div class="announcement-item" th:each="announcement : ${announcements}">
+            <h3 class="title">
+                <a th:href="@{/announcements/{id}(id=${announcement.id})}" th:text="${announcement.title}">공지사항 제목</a>
+            </h3>
+            <span class="date" th:text="${#temporals.format(announcement.postDate, 'yyyy-MM-dd')}">2025-06-22</span>
+            <p class="summary" th:text="${#strings.abbreviate(announcement.content, 150)}">
+                공지사항 내용의 일부가 여기에 표시됩니다.
+            </p>
+        </div>
+        <div th:if="${announcements.isEmpty()}" style="text-align: center; color: #888;">
+            <p>등록된 공지사항이 없습니다.</p>
+        </div>
+    </div>
+
+    <div class="pagination">
+        <a th:if="${currentPage > 0}"
+           th:href="@{/announcements(page=${currentPage - 1}, size=${size})}"
+           class="arrow">&laquo; 이전</a>
+
+        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+            <a th:href="@{/announcements(page=${i}, size=${size})}"
+               th:classappend="${i == currentPage ? 'active' : ''}"
+               th:text="${i + 1}">1</a>
+        </span>
+
+        <a th:if="${currentPage < totalPages - 1}"
+           th:href="@{/announcements(page=${currentPage + 1}, size=${size})}"
+           class="arrow">다음 &raquo;</a>
+    </div>
+
+</body>
+</html>

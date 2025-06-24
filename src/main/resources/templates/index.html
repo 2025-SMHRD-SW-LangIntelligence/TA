@@ -1019,7 +1019,6 @@
 			const yearValues = [...document.querySelectorAll("#filter-year input:checked")].map(i => i.value);
 			const statusValues = [...document.querySelectorAll("#filter-status input:checked")].map(i => i.value);
 			const depthValues = [document.getElementById("depth-min").value, document.getElementById("depth-max").value];
-			console.log(depthValues)
 
 			fetchMarkersInBounds(regionValues, yearValues, statusValues, depthValues);
 		}

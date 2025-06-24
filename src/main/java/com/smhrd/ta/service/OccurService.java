@@ -23,8 +23,8 @@ public class OccurService {
 			List<String> years,
 			List<String> statuses
 	) {
-		return occurRepository.findWithFilters(swLat, neLat, swLng, neLng, regions, years, statuses);
-//		return occurRepository.findByLatitudeBetweenAndLongitudeBetween(swLat, neLat, swLng, neLng);
+//		return occurRepository.findWithFilters(swLat, neLat, swLng, neLng);
+		return occurRepository.findByLatitudeBetweenAndLongitudeBetween(swLat, neLat, swLng, neLng);
 	}
 
 }

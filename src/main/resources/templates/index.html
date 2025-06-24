@@ -6,6 +6,7 @@
 	<title>우리 동네 지반침하 안전점수</title>
 	<script type="text/javascript"
 		src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cd3f88c99b509eab24270116d671ff65&libraries=services,clusterer"></script>
+	<link rel="stylesheet" href="css/filter.css">
 	<style>
 		html,
 		body {
@@ -67,7 +68,7 @@
 			height: 44px;
 			display: flex;
 			justify-content: center;
-			width: 750px;
+			width: 650px;
 		}
 
 		.search-bar input {
@@ -340,7 +341,7 @@
 		.modal-data-title {
 			flex-shrink: 0;
 			text-align: left;
-			width : 30%;
+			width: 30%;
 		}
 
 		.modal-data-info {
@@ -352,7 +353,7 @@
 			display: inline-block;
 			word-wrap: break-word;
 			white-space: normal;
-			word-break : auto-phrase;
+			word-break: auto-phrase;
 		}
 
 		#si_info p {
@@ -500,15 +501,19 @@
 </head>
 
 <body>
-
 	<!-- 팝업 오버레이 -->
 	<div id="popupOverlay">
 		<div id="popupContent">
 			<h2>안전신고 포상제 안내</h2>
-			<p>생활 속 위험 신고하고 포상 받으세요 </p>
-			<p>지반침하나 보도 파손 등 안전 위험 요소를 신고시 </p>
-			<p>포상금<strong><span style="color:red">(최대 30만원)</span></strong>이 지급되는 제도가 운영 중 입니다</p>
-			<p><strong>지금 확인해 보세요!!</strong></p>		
+			<p>생활 속 위험 신고하고 포상 받으세요</p>
+			<p>지반침하나 보도 파손 등 안전 위험 요소를 신고시</p>
+			<p>
+				포상금<strong><span style="color: red">(최대 30만원)</span></strong>이 지급되는
+				제도가 운영 중 입니다
+			</p>
+			<p>
+				<strong>지금 확인해 보세요!!</strong>
+			</p>
 			<button onclick="closePopup()">닫기</button>
 			<button onclick="location.href='/reward'">자세히 보기</button>
 		</div>
@@ -536,8 +541,38 @@
 
 				</ul>
 				<button class="login-btn" th:if="${userName != null}" onclick="location.href='/logout'">로그아웃</button>
+			</div>
+			<!-- 필터링 -->
+			<div id="filterToggle">
+				<img alt="" src="img/filter.png">
+				<span> 필터 </span>
+			</div>
 
+			<!-- 필터링 사이드 바 -->
+			<div id="filterSidebar">
+				<div id="filter-header">
+					<button class="filter-tab-btn active" data-tab="region">지역</button>
+					<button class="filter-tab-btn" data-tab="year">연도</button>
+					<button class="filter-tab-btn" data-tab="status">복구상태</button>
+				</div>
+				<div id="filter-contents">
+					<div class="filter-tab-content" id="filter-region" style="display: block;">
+						<label class="filter-tab-label"><input id="region-tab-label-all" type="checkbox"> 전체</label>
+					</div>
+					<!-- 연도 -->
+					<div class="filter-tab-content" id="filter-year" style="display: none;">
+						<label class="filter-tab-label"><input id="year-tab-label-all" type="checkbox"> 전체</label>
+					</div>
 
+					<!-- 상태 -->
+					<div class="filter-tab-content" id="filter-status" style="display: none;">
+						<label class="filter-tab-label"><input id="status-tab-label-all" type="checkbox"> 전체</label>
+					</div>
+				</div>
+				<div id="filter-footer">
+					<button onclick="applyFilters()"
+						style="width: 100%; padding: 10px; background-color: #1e90ff; color: white; border: none; border-radius: 6px; cursor: pointer;">적용하기</button>
+				</div>
 			</div>
 		</div>
 
@@ -551,7 +586,8 @@
 				</div>
 				<div id="result-list"></div>
 			</div>
-			<!--  -->
+
+			<!-- 범례 -->
 			<div class="legend-box">
 				<div class="legend-title">싱크홀 깊이</div>
 				<ul>
@@ -572,8 +608,8 @@
 			<div id="sinkholeModal" class="modal-overlay" style="display: none;">
 				<div class="modal_inner">
 					<div class="modal-header">
-						<span>싱크홀 지도 상세 정보 (1 / 2) </span>
-						<span class="modal-close" onclick="closeSinkholeModal()">❌</span>
+						<span>싱크홀 지도 상세 정보 (1 / 2) </span> <span class="modal-close"
+							onclick="closeSinkholeModal()">❌</span>
 					</div>
 					<div class="modal-container">
 						<div class="modal-content m1">
@@ -581,31 +617,26 @@
 
 								<h4>기본 정보</h4>
 								<p>
-									<span class="modal-data-title">
-										<strong>발생 위치 :</strong>
-									</span>
-									<span class="modal-data-info">
-										<span id="modal-location" class="modal-data"></span>
+									<span class="modal-data-title"> <strong>발생 위치 :</strong>
+									</span> <span class="modal-data-info"> <span id="modal-location"
+											class="modal-data"></span>
 									</span>
 								</p>
 
 								<p>
-									<span class="modal-data-title">
-										<strong>발생 일자 :</strong>
-									</span>
-									<span class="modal-data-info">
-										<span id="modal-date" class="modal-data"></span>
+									<span class="modal-data-title"> <strong>발생 일자 :</strong>
+									</span> <span class="modal-data-info"> <span id="modal-date"
+											class="modal-data"></span>
 									</span>
 								</p>
 								<hr>
 
 								<h4>싱크홀 규모</h4>
 								<p>
-									<span class="modal-data-title">
-										<span>넓이 / 연장 / 깊이 </span>
-									</span>
-									<span class="modal-data-info">
-										<span id="modal-size" class="modal-data"></span>
+									<span class="modal-data-title"> <span>넓이 / 연장 /
+											깊이 </span>
+									</span> <span class="modal-data-info"> <span id="modal-size"
+											class="modal-data"></span>
 									</span>
 								</p>
 								<hr>
@@ -624,65 +655,52 @@
 							<div class="modal-body">
 								<h4>지질</h4>
 								<p>
-									<span class="modal-data-title">
-										<span id="modal-bedType"></span>
-									</span>
-									<span class="modal-data-info">
-										<span id="modal-bedInfo" class="modal-data"></span>
+									<span class="modal-data-title"> <span id="modal-bedType"></span>
+									</span> <span class="modal-data-info"> <span id="modal-bedInfo"
+											class="modal-data"></span>
 									</span>
 								</p>
 								<hr>
 
 								<h4>피해 상황</h4>
 								<p>
-									<span class="modal-data-title">
-										<strong>사망자 수 :</strong>
-									</span>
-									<span class="modal-data-info">
-										<span id="modal-death" class="modal-data"></span>
+									<span class="modal-data-title"> <strong>사망자 수 :</strong>
+									</span> <span class="modal-data-info"> <span id="modal-death"
+											class="modal-data"></span>
 									</span>
 								</p>
 								<p>
-									<span class="modal-data-title">
-										<strong>부상자 수 :</strong>
-									</span>
-									<span class="modal-data-info">
-										<span id="modal-injury" class="modal-data"></span>
+									<span class="modal-data-title"> <strong>부상자 수 :</strong>
+									</span> <span class="modal-data-info"> <span id="modal-injury"
+											class="modal-data"></span>
 									</span>
 								</p>
 								<p>
-									<span class="modal-data-title">
-										<strong>차량 피해 :</strong>
-									</span>
-									<span class="modal-data-info">
-										<span id="modal-vehicle" class="modal-data"></span>
+									<span class="modal-data-title"> <strong>차량 피해 :</strong>
+									</span> <span class="modal-data-info"> <span id="modal-vehicle"
+											class="modal-data"></span>
 									</span>
 								</p>
 								<p>
-									<span class="modal-data-title">
-										<strong>관련 뉴스 URL :</strong>
-									</span>
-									<span class="modal-data-info">
-										<a id="modal-news" class="modal-data" href="#" target="_blank">바로가기</a>
+									<span class="modal-data-title"> <strong>관련 뉴스
+											URL :</strong>
+									</span> <span class="modal-data-info"> <a id="modal-news" class="modal-data"
+											href="#" target="_blank">바로가기</a>
 									</span>
 								</p>
 								<hr>
 
 								<h4>처리 상황</h4>
 								<p>
-									<span class="modal-data-title">
-										<strong>처리 상태 :</strong>
-									</span>
-									<span class="modal-data-info">
-										<span id="modal-status" class="modal-data"></span>
+									<span class="modal-data-title"> <strong>처리 상태 :</strong>
+									</span> <span class="modal-data-info"> <span id="modal-status"
+											class="modal-data"></span>
 									</span>
 								</p>
 								<p>
-									<span class="modal-data-title">
-										<strong>처리 방법 :</strong>
-									</span>
-									<span class="modal-data-info">
-										<span id="modal-method" class="modal-data"></span>
+									<span class="modal-data-title"> <strong>처리 방법 :</strong>
+									</span> <span class="modal-data-info"> <span id="modal-method"
+											class="modal-data"></span>
 									</span>
 								</p>
 								<hr>
@@ -690,8 +708,7 @@
 							</div>
 						</div>
 						<div class="modal_slider_btn">
-							<a href="" class="prev" title="이전"> &lt </a>
-							<a href="#" class="next" title="다음"> &gt </a>
+							<a href="" class="prev" title="이전"> &lt </a> <a href="#" class="next" title="다음"> &gt </a>
 						</div>
 					</div>
 					<div class="modal-footer">
@@ -829,12 +846,22 @@
 		// 오버레이 전역 선언
 		let currentOverlay = null;
 
-		function fetchMarkersInBounds() {
+		function fetchMarkersInBounds(regionList = [], yearList = [], statusList = []) {
 			const bounds = map.getBounds();
 			const sw = bounds.getSouthWest();
 			const ne = bounds.getNorthEast();
 
-			const url = `/api/occur/within?swLat=${sw.getLat()}&swLng=${sw.getLng()}&neLat=${ne.getLat()}&neLng=${ne.getLng()}`;
+			const params = new URLSearchParams({
+				swLat : sw.getLat(),
+				swLng : sw.getLng(),
+				neLat : ne.getLat(),
+				neLng : ne.getLng(),
+				regions : regionList.join(','),
+				years : yearList.join(','),
+				statuses : statusList.join(',')
+			});
+
+			const url = `/api/occur/within?${params.toString()}`;
 
 			fetch(url)
 				.then(res => res.json())
@@ -848,11 +875,11 @@
 						dth = parseFloat(d.sinkDepth)
 						if (dth >= 2.0) {
 							marker_color = "red"
-						}else if (1.5 <= dth && dth < 2.0){
+						} else if (1.5 <= dth && dth < 2.0) {
 							marker_color = "orange"
-						}else if (1.0 <= dth && dth < 1.5){
+						} else if (1.0 <= dth && dth < 1.5) {
 							marker_color = "yellow"
-						}else {
+						} else {
 							marker_color = "green"
 						}
 
@@ -866,10 +893,6 @@
 							title: d.location,
 							image: marker_img
 						});
-
-
-
-
 
 						kakao.maps.event.addListener(marker, 'click', function () {
 							if (currentOverlay) currentOverlay.setMap(null);
@@ -950,11 +973,6 @@
 					document.getElementById('modal-date').textContent = data.sagoDate;
 					document.getElementById('modal-size').textContent = `${data.sinkWidth}m / ${data.sinkExtend}m / ${data.sinkDepth}m`;
 
-					document.getElementById('modal-bedType').textContent = bed_data[0].bedType
-					document.getElementById('modal-bedInfo').textContent = bed_data[0].bedInfo;
-
-					document.getElementById('modal-detail').textContent = data.sagoDetail;
-
 					const imageEl = document.getElementById('modal-image');
 					if (data.sagoImgUrl && data.sagoImgUrl !== 'nan') {
 						imageEl.src = data.sagoImgUrl;
@@ -963,8 +981,13 @@
 						imageEl.style.display = 'none';
 					}
 
-					document.getElementById('modal-death').textContent = data.deathCnt + "대";
-					document.getElementById('modal-injury').textContent = data.injuryCnt + "대";
+					document.getElementById('modal-detail').textContent = data.sagoDetail;
+
+					document.getElementById('modal-bedType').textContent = bed_data[0].bedType
+					document.getElementById('modal-bedInfo').textContent = bed_data[0].bedInfo;
+
+					document.getElementById('modal-death').textContent = data.deathCnt + "명";
+					document.getElementById('modal-injury').textContent = data.injuryCnt + "명";
 					document.getElementById('modal-vehicle').textContent = data.vehicleCnt + "대";
 					document.getElementById('modal-news').href = data.sagoNewsUrl;
 					document.getElementById('modal-news').textContent = data.sagoNewsUrl;
@@ -1033,8 +1056,9 @@
 			}
 			showModalPage(0);
 		}
-		
+
 	</script>
+	<script src="scripts/filter.js"></script>
 </body>
 
 </html>

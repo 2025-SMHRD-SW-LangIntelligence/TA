@@ -14,8 +14,17 @@ public class OccurService {
 	@Autowired
 	OccurRepository occurRepository;
 
-	public List<OccurEntity> findWithinBounds(String swLat, String neLat, String swLng, String neLng) {
-		return occurRepository.findByLatitudeBetweenAndLongitudeBetween(swLat, neLat, swLng, neLng);
+	public List<OccurEntity> findFilteredWithinBounds(
+			String swLat,
+			String neLat,
+			String swLng,
+			String neLng,
+			List<String> regions,
+			List<String> years,
+			List<String> statuses
+	) {
+		return occurRepository.findWithFilters(swLat, neLat, swLng, neLng, regions, years, statuses);
+//		return occurRepository.findByLatitudeBetweenAndLongitudeBetween(swLat, neLat, swLng, neLng);
 	}
 
 }

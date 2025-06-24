@@ -30,7 +30,7 @@
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-      width: 600px;
+      width: 450px;
       text-align: center;
     }
     h2 {
@@ -58,6 +58,7 @@
       <div class="chart-box">
         <h2>연도별 지반침하 발생건수</h2>
         <canvas id="barChart"></canvas>
+      <div style="margin-top: 10px; font-size: 13px; color: #999;">출처: 지하안전정보시스템(JIS)</div>   
       </div>
       <!-- 지역별 침하 원인 -->
       <div class="chart-box">
@@ -82,11 +83,10 @@
           <option value="제주특별자치도">제주특별자치도</option>
         </select>
         <canvas id="doughnutChart"></canvas>
+        <div style="margin-top: 10px; font-size: 13px; color: #999;">출처: 지하안전정보시스템(JIS)</div>
       </div>
-    </div>
-
-    <!-- 계절별 그래프 -->
-    <div class="chart-box" style="margin-top: -20px;">
+       <!-- 계절별 그래프 -->
+      <div class="chart-box">
       <h2>계절별 지반침하 발생건수</h2>
       <select id="seasonRegionSelect" onchange="updateSeasonChart()">
         <option value="서울특별시" selected>서울특별시</option>
@@ -108,7 +108,12 @@
         <option value="제주특별자치도">제주특별자치도</option>
       </select>
       <canvas id="seasonChart"></canvas>
+      <div style="margin-top: 10px; font-size: 13px; color: #999;">출처: 지하안전정보시스템(JIS)</div>
     </div>
+    </div>
+
+   
+    
   </div>
 
   <script>
@@ -230,7 +235,8 @@
       '경상남도': [31, 22, 8, 7],
       '제주특별자치도': [1, 8, 4, 0],
     };
-
+    const defaultRegion = '서울특별시';
+    const defaultTotal = seasonData[defaultRegion].reduce((sum, value) => sum + value, 0);
     const seasonCtx = document.getElementById('seasonChart').getContext('2d');
     let seasonChart = new Chart(seasonCtx, {
       type: 'bar',
@@ -249,7 +255,11 @@
           legend: { display: false },
           title: {
             display: true,
-            text: '서울특별시 계절별 지반침하 발생건수'
+            color: '#333',
+            text: `${defaultRegion} 계절별 지반침하 발생건수 : ${defaultTotal}건`, 
+            font: { size: 18, weight: 'bold' }
+            
+            
           }
         },
         scales: {
@@ -271,11 +281,18 @@
     });
 
     function updateSeasonChart() {
-      const selectedRegion = document.getElementById('seasonRegionSelect').value;
-      seasonChart.data.datasets[0].data = seasonData[selectedRegion];
-      seasonChart.options.plugins.title.text = `${selectedRegion} 계절별 지반침하 발생건수`;
-      seasonChart.update();
-    }
+    	  const selectedRegion = document.getElementById('seasonRegionSelect').value;
+    	  const regionData = seasonData[selectedRegion];
+
+    	  //  총합 계산
+    	  const total = regionData.reduce((sum, value) => sum + value, 0);
+
+    	  //  차트 데이터와 제목 갱신
+    	  seasonChart.data.datasets[0].data = regionData;
+    	  seasonChart.options.plugins.title.text = `${selectedRegion} 계절별 지반침하 발생건수 :  ${total}건`;
+
+    	  seasonChart.update();
+    	}
   </script>
 </body>
 </html>

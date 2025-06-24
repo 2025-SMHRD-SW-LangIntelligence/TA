@@ -28,6 +28,9 @@ public class User implements Serializable {
 
     @Column(nullable = false, unique = true) // 이메일도 유니크하면 좋음
     private String email;
+    
+    @Column(nullable = false) // 👈 여기 추가
+    private String role; // USER or ADMIN
 
     public User() {}
 
@@ -46,5 +49,8 @@ public class User implements Serializable {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }
 

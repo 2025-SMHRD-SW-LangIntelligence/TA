@@ -88,7 +88,7 @@ tbody tr:hover {
 	<div th:replace="~{header :: header}"></div>
 
 	<main class="container">
-		<h2>📢 제보 게시판</h2>
+		<h2>제보 게시판</h2>
 
 		<!-- ✅ 검색 폼 -->
 		<form class="search-form" onsubmit="searchReport(event)">
@@ -158,21 +158,33 @@ tbody tr:hover {
 			</nav>
 		</div>
 
-
-
-
-		<!-- ✅ 제보 버튼 -->
-		<div class="write-btn">
-			<a th:href="@{/report/new}" class="btn btn-success"
-				th:if="${session.loginUser != null}">✏️ 제보하기</a> <a
-				th:if="${session.loginUser == null}" th:href="@{/login}"
-				class="btn btn-outline-secondary">🔐 로그인 후 제보</a>
-
+		<div
+			style="position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; gap: 10px;">
+			<!-- 홈으로 버튼 -->
+			<a th:href="@{/}"
+				style="background-color: #337DFF; color: white; padding: 10px 18px; border-radius: 6px; font-weight: bold; text-decoration: none; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);">
+				홈으로 </a>
 		</div>
-		<!-- 로그인 안 된 상태일 때 버튼 누르면 로그인 페이지 이동 + 메시지 표시 -->
-		<div th:if="${errorMessage}" class="alert alert-danger"
-			th:text="${errorMessage}"></div>
 
+			<!-- ✅ 제보 버튼 -->
+			<div class="write-btn">
+				<a th:href="@{/report/new}" class="btn btn-success"
+					th:if="${session.loginUser != null}">제보하기</a> <a
+					th:if="${session.loginUser == null}" th:href="@{/login}"
+					class="btn btn-outline-secondary">로그인 후 제보</a>
+
+
+
+			</div>
+
+			<a class="btn btn-success"
+				th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"
+				onclick="location.href='/admin/dashboard'">관리자 메뉴로 돌아가기</a>
+
+
+			<!-- 로그인 안 된 상태일 때 버튼 누르면 로그인 페이지 이동 + 메시지 표시 -->
+			<div th:if="${errorMessage}" class="alert alert-danger"
+				th:text="${errorMessage}"></div>
 	</main>
 
 	<!-- ✅ footer fragment -->

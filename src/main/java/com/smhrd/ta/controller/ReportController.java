@@ -111,15 +111,16 @@ public class ReportController {
 		return results.stream().map(Report::toMaskedJson).collect(Collectors.toList());
 	}
 
-	// 본인 계정 외 삭제 제한
+	// 본인 계정 외 삭제 제한 // 관리자 계정 삭제기능 허용
 	@PostMapping("/delete/{id}")
 	public String deleteReport(@PathVariable("id") Long id, HttpSession session,
 			RedirectAttributes redirectAttributes) {
+
 		User loginUser = (User) session.getAttribute("loginUser");
 		Report report = reportService.findById(id);
 
-		// 서버에서도 본인 확인
-		if (report != null && loginUser != null && report.getId().equals(loginUser.getUsername())) {
+		if (report != null && loginUser != null
+				&& (loginUser.getRole().equals("ADMIN") || report.getId().equals(loginUser.getUsername()))) {
 			reportService.deleteReport(id);
 			redirectAttributes.addFlashAttribute("message", "삭제되었습니다.");
 		} else {
@@ -133,15 +134,16 @@ public class ReportController {
 	@GetMapping("/edit/{id}")
 	public String editReportForm(@PathVariable("id") Long id, HttpSession session, Model model) {
 		Report report = reportService.findById(id);
-
-		// 로그인한 사용자와 작성자가 다르면 접근 제한
 		User loginUser = (User) session.getAttribute("loginUser");
-		if (loginUser == null || !loginUser.getUsername().equals(report.getId())) {
+
+		// 작성자 or 관리자만 접근 가능
+		if (loginUser == null
+				|| (!loginUser.getUsername().equals(report.getId()) && !loginUser.getRole().equals("ADMIN"))) {
 			return "redirect:/report/list";
 		}
 
 		model.addAttribute("report", report);
-		return "reportEditForm"; // 수정용 html
+		return "reportEditForm";
 	}
 
 	@PostMapping("/update")
@@ -159,8 +161,9 @@ public class ReportController {
 		Report existingReport = reportService.findById(report.getReportId());
 
 		// 3. 작성자 본인인지 확인
-		if (!existingReport.getId().equals(loginUser.getUsername())) {
-			redirectAttributes.addFlashAttribute("errorMessage", "작성자만 수정할 수 있습니다.");
+		// ✅ 관리자 or 작성자만 수정 가능
+		if (!(existingReport.getId().equals(loginUser.getUsername()) || "ADMIN".equals(loginUser.getRole()))) {
+			redirectAttributes.addFlashAttribute("errorMessage", "작성자 또는 관리자만 수정할 수 있습니다.");
 			return "redirect:/report/detail/" + report.getReportId();
 		}
 

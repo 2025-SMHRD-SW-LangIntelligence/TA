@@ -36,6 +36,8 @@ public class UserController {
     public boolean checkUsername(@RequestParam String username) {
         return userService.isUsernameAvailable(username);
     }
+    
+    
 
     
 

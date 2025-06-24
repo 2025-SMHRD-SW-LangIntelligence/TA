@@ -101,7 +101,7 @@
 			left: 50%;
 			transform: translateX(-50%);
 			width: 100%;
-			max-width: 750px;
+			max-width: 650px;
 			overflow-y: auto;
 			background: white;
 			border: 2px solid #337DFF;
@@ -919,8 +919,8 @@
 				regions: regionList.join(','),
 				years: yearList.join(','),
 				statuses: statusList.join(','),
-				depth_min : depthList[0],
-				depth_max : depthList[1]
+				depth_min: depthList[0],
+				depth_max: depthList[1]
 			});
 
 			const url = `/api/occur/within?${params.toString()}`;
@@ -1063,10 +1063,10 @@
 					document.getElementById('modal-death').textContent = data.deathCnt + "명";
 					document.getElementById('modal-injury').textContent = data.injuryCnt + "명";
 					document.getElementById('modal-vehicle').textContent = data.vehicleCnt + "대";
-					if(data.sagoNewsUrl == 'nan'){
+					if (data.sagoNewsUrl == 'nan') {
 						document.getElementById('modal-news').href = "";
 						document.getElementById('modal-news').textContent = "없음"
-					}else{
+					} else {
 						document.getElementById('modal-news').href = data.sagoNewsUrl;
 						document.getElementById('modal-news').textContent = "바로가기";
 					}

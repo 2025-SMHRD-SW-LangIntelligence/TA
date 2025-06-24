@@ -30,7 +30,7 @@ public class Report {
     @Column(name = "Content")
     private String content;
 
-    @Column(name = "WriteDay")   // DB 컬럼명이 'WritDay'로 오타가 있는 경우 이렇게 맞춰야 합니다.
+    @Column(name = "WriteDay")   // DB 컬럼명이 일치
     private LocalDate writeDay;
 
     @Column(name = "ID")

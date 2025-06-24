@@ -24,10 +24,8 @@
 	</properties>
 
 	<dependencies>
-		
-		
-		
-	
+
+
 		<!-- Spring Boot 기본 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -85,14 +83,18 @@
 			<artifactId>SpringBootFast</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
-		<dependency><groupId>jakarta.annotation</groupId>
-        <artifactId>jakarta.annotation-api</artifactId>
-        <version>2.1.1</version>
+
+		<dependency>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
+			<version>2.1.1</version>
 		</dependency>
 		
 		
-		
+
+
+
+
 	</dependencies>
 
 

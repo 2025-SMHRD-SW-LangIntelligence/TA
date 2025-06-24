@@ -47,6 +47,12 @@ public class LoginController {
 			if (user.getPassword().equals(password)) {
 				session.setAttribute("loginUser", user);
 				redirectAttributes.addFlashAttribute("message", "로그인 되었습니다.");
+				
+				// ✅ 관리자 계정이라면 관리자 페이지로 이동
+	            if ("ADMIN".equals(user.getRole())) {
+	                return "redirect:/admin/dashboard";
+	            }
+				
 				return "redirect:/"; // 리다이렉트 시 flash 메시지 유지
 			}
 		}

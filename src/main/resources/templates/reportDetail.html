@@ -50,11 +50,24 @@ body {
 	color: #999;
 	font-style: italic;
 }
+
+.action-buttons {
+	text-align: right; /* 오른쪽 끝 정렬 */
+	margin-top: 20px;
+}
+
+.action-buttons .btn {
+	margin-left: 10px; /* 버튼 사이 간격 */
+	display: inline-block;
+}
 </style>
+
+
+
 </head>
 <body>
 	<div class="card">
-		<h2>📸 제보 상세</h2>
+		<h2>제보 내용</h2>
 
 		<p>
 			<span class="label">내용:</span> <span th:text="${report.content}">내용
@@ -73,22 +86,10 @@ body {
 				없음</span>
 		</p>
 
-		<!-- ✅ 본문 아래 수정/삭제 버튼 (글 작성자만 보임) -->
-		
-		<div
-			th:if="${session.loginUser != null and session.loginUser.username == report.id}"
-			style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;"
-			class="d-flex gap-2">
-
-			<a th:href="@{/report/edit/{id}(id=${report.reportId})}"
-				class="btn btn-primary">✏️ 수정</a>
-					<!-- 📍 페이지 가장 바깥쪽(본문 내용 아래)에 위치 -->
-			<form th:action="@{/report/delete/{id}(id=${report.reportId})}"
-				method="post">
-				<button type="submit" class="btn btn-danger">🗑 삭제</button>
-			</form>
-		</div>
-
+		<!-- ✅ 뒤로가기 버튼 (우측 상단 고정, 잘 보이도록 스타일링) -->
+		<a th:href="@{/report/list}"
+			style="position: fixed; top: 15px; left: 20px; background-color: #0055cc; color: white; padding: 10px 18px; border-radius: 6px; font-weight: bold; text-decoration: none; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); z-index: 1000;">
+			⬅ 뒤로 가기 </a>
 
 		<div class="image-container">
 			<div th:if="${report.images != null and !report.images.isEmpty()}">
@@ -101,6 +102,23 @@ body {
 			<div class="no-image"
 				th:if="${report.images == null or report.images.isEmpty()}">
 				업로드된 이미지가 없습니다.</div>
+
+			<!-- ✅ 본문 아래 수정/삭제 버튼 (글 작성자만 보임) -->
+
+			<div class="action-buttons"
+				th:if="${session.loginUser != null 
+    and (session.loginUser.role == 'ADMIN' 
+         or session.loginUser.username == report.id)}">
+
+				<a th:href="@{/report/edit/{id}(id=${report.reportId})}"
+					class="btn btn-primary">✏️ 수정</a>
+				<!-- 📍 페이지 가장 바깥쪽(본문 내용 아래)에 위치 -->
+				<form th:action="@{/report/delete/{id}(id=${report.reportId})}"
+					method="post" style="display: inline;">
+					<button type="submit" class="btn btn-danger">🗑 삭제</button>
+				</form>
+			</div>
+
 
 		</div>
 	</div>

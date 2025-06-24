@@ -18,7 +18,11 @@ public class UserService {
 
 
     public void registerUser(User user) {
-        // 비밀번호 암호화 추가
+        user.setRole("USER"); // 여기서 일반 사용자 설정
+
+        // 선택: 비밀번호 암호화
+        // user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         userRepository.save(user);
     }
 

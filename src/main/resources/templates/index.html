@@ -1063,8 +1063,13 @@
 					document.getElementById('modal-death').textContent = data.deathCnt + "명";
 					document.getElementById('modal-injury').textContent = data.injuryCnt + "명";
 					document.getElementById('modal-vehicle').textContent = data.vehicleCnt + "대";
-					document.getElementById('modal-news').href = data.sagoNewsUrl;
-					document.getElementById('modal-news').textContent = data.sagoNewsUrl;
+					if(data.sagoNewsUrl == 'nan'){
+						document.getElementById('modal-news').href = "";
+						document.getElementById('modal-news').textContent = "없음"
+					}else{
+						document.getElementById('modal-news').href = data.sagoNewsUrl;
+						document.getElementById('modal-news').textContent = "바로가기";
+					}
 
 					document.getElementById('modal-status').textContent = `${data.trStatus} (${data.trFnDate})`;
 					document.getElementById('modal-method').textContent = data.trMethod;

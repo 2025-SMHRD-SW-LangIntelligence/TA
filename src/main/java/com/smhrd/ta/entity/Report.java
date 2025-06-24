@@ -122,6 +122,21 @@ public class Report {
         return id.substring(0, 3) + "***" + id.substring(id.length() - 2);
     }
 
+	public void setContent(String content2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setLocation(String location2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public List<Report> getImages() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
     
 
 }

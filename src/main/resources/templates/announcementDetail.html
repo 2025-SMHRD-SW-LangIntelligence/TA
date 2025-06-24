@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${announcement.title} + ' - 공지사항 상세'">공지사항 상세</title>
+    <style>
+        /* 기본 스타일은 announce.html과 유사하게 유지하거나 필요에 따라 조정하세요 */
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); background-color: #fff; }
+        h1 { color: #007bff; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+        .detail-title { color: #333; margin-top: 0; margin-bottom: 15px; }
+        .detail-date { color: #777; font-size: 0.9em; margin-bottom: 20px; display: block; }
+        .detail-content { font-size: 1.1em; line-height: 1.8; color: #555; border-top: 1px dashed #eee; padding-top: 20px; }
+        .back-link { display: inline-block; margin-top: 30px; padding: 10px 15px; border: 1px solid #007bff; border-radius: 5px; text-decoration: none; color: #007bff; transition: background-color 0.3s ease, color 0.3s ease; }
+        .back-link:hover { background-color: #007bff; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+
+        <div th:if="${announcement}">
+            <h2 class="detail-title" th:text="${announcement.title}">공지사항 상세 제목</h2>
+            <span class="detail-date" th:text="${#temporals.format(announcement.postDate, 'yyyy년 MM월 dd일')}"></span>
+            <div class="detail-content" th:utext="${announcement.content}">
+                공지사항의 상세 내용이 여기에 들어갑니다.
+                줄 바꿈이나 간단한 HTML 태그도 포함될 수 있습니다.
+            </div>
+            <p><a href="/announcements" class="back-link">← 목록으로 돌아가기</a></p>
+        </div>
+        <div th:unless="${announcement}">
+            <p style="text-align: center; color: #888;">죄송합니다. 해당 공지사항을 찾을 수 없습니다.</p>
+            <p style="text-align: center;"><a href="/announcements" class="back-link">공지사항 목록으로 돌아가기</a></p>
+        </div>
+    </div>
+</body>
+</html>

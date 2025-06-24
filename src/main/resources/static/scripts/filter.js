@@ -64,13 +64,3 @@ filter_gen_event("filter-year", year_list, "year-tab-label-all")
 // filter 상태
 filter_gen_event("filter-status", tr_status_list, "status-tab-label-all")
 
-// 필터 적용 함수
-function applyFilters() {
-    const regionValues = [...document.querySelectorAll("#filter-region input:checked")].map(i => i.value);
-    const yearValues = [...document.querySelectorAll("#filter-year input:checked")].map(i => i.value);
-    const statusValues = [...document.querySelectorAll("#filter-status input:checked")].map(i => i.value);
-
-    fetchMarkersInBounds(regionValues, yearValues, statusValues);
-}
-
-// test

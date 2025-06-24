@@ -29,10 +29,11 @@ public class OccurController {
 			@RequestParam String neLng,
 			@RequestParam(required = false) List<String> regions,
 			@RequestParam(required = false) List<String> years,
-			@RequestParam(required = false) List<String> statuses
+			@RequestParam(required = false) List<String> statuses,
+			@RequestParam(required = false) Double depth_min,
+			@RequestParam(required = false) Double depth_max
 	) {
-		return occurService.findFilteredWithinBounds(swLat, neLat, swLng, neLng, regions, years, statuses);
-//		return occurService.findWithinBounds(swLat, neLat, swLng, neLng);
+		return occurService.findFilteredWithinBounds(swLat, neLat, swLng, neLng, regions, years, statuses, depth_min, depth_max);
 	}
 	
 	@GetMapping("/api/occur/bed")

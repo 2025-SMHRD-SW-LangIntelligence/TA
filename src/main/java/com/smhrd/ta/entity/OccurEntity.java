@@ -16,27 +16,26 @@ public class OccurEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private String occurId;
 	
-	@Column(nullable = false)
     private String location;
-	private String latitude;
-	private String longitude;
-	
-	@Column(nullable = false)
+	private Double latitude;
+	private Double longitude;
     private String sagoDate;
-	
-    private String sinkWidth;
-    private String sinkExtend;
-    private String sinkDepth;
+    private Double sinkWidth;
+    private Double sinkExtend;
+    private Double sinkDepth;
 	
 	@Column(nullable = false)
     private String bedId;
     private String sagoDetail;
     private String sagoImgUrl;
     private String sagoNewsUrl;
-    private String deathCnt;
-    private String injuryCnt;
-    private String vehicleCnt;
+    private Integer deathCnt;
+    private Integer injuryCnt;
+    private Integer vehicleCnt;
     private String trStatus;
     private String trMethod;
     private String trFnDate;
+    
+    private String sido;
+    private String sagoDateYear;
 }

@@ -474,10 +474,10 @@
 		}
 
 		.legend-icon {
+			display: inline-block;
 			width: 10px;
 			height: 10px;
 			border-radius: 50%;
-			display: inline-block;
 			margin-right: 8px;
 		}
 
@@ -538,8 +538,6 @@
 		</div>
 	</div>
 
-
-
 	<div id="wrap">
 		<div id="header">
 			<div class="menu-icon" onclick="toggleMenu()"></div>
@@ -584,8 +582,10 @@
 					<button class="filter-tab-btn active" data-tab="region">지역</button>
 					<button class="filter-tab-btn" data-tab="year">연도</button>
 					<button class="filter-tab-btn" data-tab="status">복구상태</button>
+					<button class="filter-tab-btn" data-tab="depth">깊이</button>
 				</div>
 				<div id="filter-contents">
+					<!-- 지역 -->
 					<div class="filter-tab-content" id="filter-region" style="display: block;">
 						<label class="filter-tab-label"><input id="region-tab-label-all" type="checkbox"> 전체</label>
 					</div>
@@ -597,6 +597,16 @@
 					<!-- 상태 -->
 					<div class="filter-tab-content" id="filter-status" style="display: none;">
 						<label class="filter-tab-label"><input id="status-tab-label-all" type="checkbox"> 전체</label>
+					</div>
+
+					<!-- 깊이 -->
+					<div class="filter-tab-content" id="filter-depth" style="display: none;">
+						<label class="filter-tab-label">
+							최소 <input id="depth-min" type="number" step="0.1" min="0" value="0.0"> m
+						</label>
+						<label class="filter-tab-label">
+							최대 <input id="depth-max" type="number" step="0.1" max="50" value="50.0"> m
+						</label>
 					</div>
 				</div>
 				<div id="filter-footer">
@@ -752,6 +762,7 @@
 		</div>
 	</div>
 
+	<script src="scripts/filter.js"></script>
 	<script>
 		// 메뉴 버튼
 		function toggleMenu() {
@@ -889,19 +900,13 @@
 			}
 		};
 
-
 		// localStorage.removeItem("hidePopupUntil") 개발자 도구 켜서 콘솔창에 입력 시 다시 팝업 실행 가능
 		// 팝업창 오류 발생 시 팝업창에 직접 입력 -> allow pasting 복사 X
-
-
-
-
-
 
 		// 오버레이 전역 선언
 		let currentOverlay = null;
 
-		function fetchMarkersInBounds(regionList = [], yearList = [], statusList = []) {
+		function fetchMarkersInBounds(regionList = [], yearList = [], statusList = [], depthList = []) {
 			const bounds = map.getBounds();
 			const sw = bounds.getSouthWest();
 			const ne = bounds.getNorthEast();
@@ -913,7 +918,9 @@
 				neLng: ne.getLng(),
 				regions: regionList.join(','),
 				years: yearList.join(','),
-				statuses: statusList.join(',')
+				statuses: statusList.join(','),
+				depth_min : depthList[0],
+				depth_max : depthList[1]
 			});
 
 			const url = `/api/occur/within?${params.toString()}`;
@@ -1006,11 +1013,24 @@
 				});
 		}
 
+		// 필터 적용 함수
+		function applyFilters() {
+			const regionValues = [...document.querySelectorAll("#filter-region input:checked")].map(i => i.value);
+			const yearValues = [...document.querySelectorAll("#filter-year input:checked")].map(i => i.value);
+			const statusValues = [...document.querySelectorAll("#filter-status input:checked")].map(i => i.value);
+			const depthValues = [document.getElementById("depth-min").value, document.getElementById("depth-max").value];
+			console.log(depthValues)
+
+			fetchMarkersInBounds(regionValues, yearValues, statusValues, depthValues);
+		}
+
 		// 지도 이동 또는 확대/축소 시마다 마커 갱신
-		kakao.maps.event.addListener(map, 'idle', fetchMarkersInBounds);
+		kakao.maps.event.addListener(map, 'idle', applyFilters);
 
 		// 최초 로딩 시 실행
-		fetchMarkersInBounds();
+		window.onload = function () {
+			applyFilters();
+		}
 
 		// 오버레이 닫기 함수
 		function overlayClose() {
@@ -1113,7 +1133,7 @@
 		}
 
 	</script>
-	<script src="scripts/filter.js"></script>
+
 </body>
 
 </html>

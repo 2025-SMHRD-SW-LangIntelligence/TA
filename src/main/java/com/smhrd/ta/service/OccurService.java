@@ -21,10 +21,11 @@ public class OccurService {
 			String neLng,
 			List<String> regions,
 			List<String> years,
-			List<String> statuses
+			List<String> statuses,
+			Double depth_min,
+			Double depth_max
 	) {
-//		return occurRepository.findWithFilters(swLat, neLat, swLng, neLng);
-		return occurRepository.findByLatitudeBetweenAndLongitudeBetween(swLat, neLat, swLng, neLng);
+		return occurRepository.findWithFilters(swLat, neLat, swLng, neLng, regions, years, statuses, depth_min, depth_max);
 	}
 
 }

@@ -133,6 +133,7 @@
 			align-items: center;
 			font-size: 25px;
 			user-select: none;
+			margin-bottom : 7px;
 		}
 
 		.menu-icon {
@@ -522,7 +523,7 @@
 
 <body>
 	<!-- 팝업 오버레이 -->
-	<div id="popupOverlay" style="display:flex;">
+	<div id="popupOverlay" style="display:none;">
 
 		<div id="popupContent" style="background: white; padding: 30px; border-radius: 10px; text-align: center;">
 			<h2>안전신고 포상제 안내</h2>
@@ -961,6 +962,7 @@
 		}
 
 		window.onload = function () {
+			applyFilters();
 			const hideUntil = localStorage.getItem("hidePopupUntil");
 			const now = new Date().getTime();
 
@@ -1097,11 +1099,6 @@
 
 		// 지도 이동 또는 확대/축소 시마다 마커 갱신
 		kakao.maps.event.addListener(map, 'idle', applyFilters);
-
-		// 최초 로딩 시 실행
-		window.onload = function () {
-			applyFilters();
-		}
 
 		// 오버레이 닫기 함수
 		function overlayClose() {

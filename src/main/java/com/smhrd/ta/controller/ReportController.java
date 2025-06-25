@@ -101,7 +101,7 @@ public class ReportController {
 		case "location":
 			results = reportRepository.findByLocationContaining(keyword);
 			break;
-		case "content":
+		case "title":
 		default:
 			results = reportRepository.findByContentContaining(keyword);
 			break;
@@ -173,6 +173,7 @@ public class ReportController {
 	    existingReport.setContent(report.getContent());
 	    existingReport.setLocation(report.getLocation());
 	    existingReport.setWriteDay(LocalDate.now());
+	    existingReport.setTitle(report.getTitle());
 
 	    // 새 이미지 업로드 시 처리
 	    if (!file.isEmpty()) {

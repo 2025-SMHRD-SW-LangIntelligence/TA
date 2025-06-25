@@ -70,12 +70,18 @@ button:hover {
 <body>
 
 	<div class="form-container">
-		<h2>📸 제보 작성</h2>
+		<h2>제보 작성</h2>
 
 
 		<form th:action="@{/report/update}" th:object="${report}"
 			method="post" enctype="multipart/form-data">
 			<input type="hidden" th:field="*{reportId}" />
+
+			<div class="mb-3">
+				<label for="title">제목</label> <input type="text" id="title"
+					name="title" th:value="${report.title}" required />
+			</div>
+
 			<div class="mb-3">
 				<label>내용</label>
 				<textarea th:field="*{content}" class="form-control" required></textarea>

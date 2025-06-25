@@ -78,11 +78,10 @@ h2 {
 tbody tr:hover {
 	background-color: #dbe9ff;
 	cursor: pointer;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);  /* 진하게 효과 넣기 */
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* 진하게 효과 넣기 */
 	transition: all 0.2s ease-in-out;
 	transform: translateY(1px);
 }
-
 </style>
 </head>
 <body>
@@ -93,13 +92,15 @@ tbody tr:hover {
 	<hr style="width: 150px; margin-left: 10px; border: 1px solid #2c74d8">
 
 	<div class="search-bar">
-		<label for="searchType" style="line-height: 36px;">검색 구분</label> <select
-			id="searchType" name="searchType">
-			<option value="content">내용</option>
-			<option value="id">작성자</option>
-			<option value="location">위치</option>
-		</select> <input type="text" id="keyword" placeholder="검색어를 입력해주세요." />
-		<button onclick="searchReport(event)">조회</button>
+		<form onsubmit="searchReport(event)">
+			<label for="searchType" style="line-height: 36px;">검색 구분</label> <select
+				id="searchType" name="searchType">
+				<option value="content">내용</option>
+				<option value="id">작성자</option>
+				<option value="location">위치</option>
+			</select> <input type="text" id="keyword" placeholder="검색어를 입력해주세요." />
+			<button type="submit">조회</button>
+		</form>
 	</div>
 
 	<div class="table-container">
@@ -117,10 +118,11 @@ tbody tr:hover {
 				<tr th:each="report, stat : ${reports}"
 					th:onclick="|location.href='@{/report/detail/{id}(id=${report.reportId})}'|">
 					<td th:text="${currentPage * 10 + stat.index + 1}">번호</td>
-					<td th:text="${report.content}">내용</td>
+					<td th:text="${#strings.abbreviate(report.content, 10)}">내용 글자
+						수 제한 10</td>
 					<td th:text="${report.maskedId}">작성자</td>
 					<td th:text="${report.writeDay}">작성일</td>
-					<td th:text="${report.location}">위치</td>
+					<td th:text="${#strings.abbreviate(report.location,5)}">위치 글자 제한 5</td>
 				</tr>
 			</tbody>
 		</table>
@@ -154,15 +156,15 @@ tbody tr:hover {
 			class="btn btn-outline-secondary">로그인 후 제보</a>
 	</div>
 	<!-- ✅ 관리자 메뉴 버튼 (관리자 계정일 경우에만 표시) -->
-		<div class="mb-3 text-end"
-			th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}">
-			<a th:href="@{/admin/dashboard}" class="btn btn-outline-dark">
-				관리자 메뉴</a>
-		</div>
-	
-	
-	
-	
+	<div class="mb-3 text-end"
+		th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}">
+		<a th:href="@{/admin/dashboard}" class="btn btn-outline-dark"> 관리자
+			메뉴</a>
+	</div>
+
+
+
+
 	<script>
 function searchReport(event) {
   event.preventDefault();
@@ -184,12 +186,19 @@ function searchReport(event) {
         tableBody.innerHTML = '<tr><td colspan="5" class="text-center">검색 결과가 없습니다.</td></tr>';
       } else {
         data.forEach((report, i) => {
-          const row = `<tr onclick="location.href='/report/detail/${report.reportId}'">
+        	// 내용 10, 위치 5글자로 제한 
+            const shortenedContent = report.content.length > 10
+              ? report.content.substring(0, 10) + '...'
+              : report.content;
+              const shortenedLocation = report.location.length > 5
+              ? report.location.substring(0, 5) + '...'
+              : report.location;
+          	const row = `<tr onclick="location.href='/report/detail/${report.reportId}'">
                           <td>${report.reportId}</td>
-                          <td>${report.content}</td>
+                          <td>${shortenedContent}</td> 
                           <td>${report.id}</td>
                           <td>${report.writeDay}</td>
-                          <td>${report.location}</td>
+                          <td>${shortenedLocation}</td>
                         </tr>`;
           tableBody.innerHTML += row;
         });

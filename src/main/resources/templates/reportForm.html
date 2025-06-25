@@ -70,46 +70,47 @@ button:hover {
 <body>
 
 	<div class="form-container">
-		<h2>📸 제보 작성</h2>
+	<h2>제보 작성</h2>
 
-		
-		<form action="/report/save" method="post"
-			enctype="multipart/form-data">
-			<label for="content">내용</label>
-			<textarea id="content" name="content" rows="4" required></textarea>
+	<form action="/report/save" method="post" enctype="multipart/form-data">
 
-			<label for="location">위치</label> <input type="text" id="location"
-				name="location" required> <label for="file">이미지 업로드</label>
-			<input type="file" id="file" name="file" accept="image/*" required
-				onchange="previewImage(event)">
+		<!-- ✅ 제목 필드 추가 -->
+		<label for="title">제목</label>
+		<input type="text" id="title" name="title" required />
 
-			<div class="preview" id="preview"></div>
+		<label for="content">내용</label>
+		<textarea id="content" name="content" rows="4" required></textarea>
 
-			<button type="submit">등록하기</button>
-		</form>
-	</div>
+		<label for="location">위치</label>
+		<input type="text" id="location" name="location" required />
 
+		<label for="file">이미지 업로드</label>
+		<input type="file" id="file" name="file" accept="image/*" required onchange="previewImage(event)" />
 
+		<div class="preview" id="preview"></div>
 
+		<button type="submit">등록하기</button>
+	</form>
+</div>
 
+<script>
+	function previewImage(event) {
+		const file = event.target.files[0];
+		const reader = new FileReader();
+		const preview = document.getElementById('preview');
 
-	<script>
-		function previewImage(event) {
-			const file = event.target.files[0];
-			const reader = new FileReader();
-			const preview = document.getElementById('preview');
+		reader.onload = function(e) {
+			preview.innerHTML = `<img src="${e.target.result}" alt="이미지 미리보기" />`;
+		};
 
-			reader.onload = function(e) {
-				preview.innerHTML = `<img src="${e.target.result}" alt="이미지 미리보기" />`;
-			};
-
-			if (file && file.type.startsWith('image/')) {
-				reader.readAsDataURL(file);
-			} else {
-				preview.innerHTML = '';
-			}
+		if (file && file.type.startsWith('image/')) {
+			reader.readAsDataURL(file);
+		} else {
+			preview.innerHTML = '';
 		}
-	</script>
+	}
+</script>
+
 
 
 	

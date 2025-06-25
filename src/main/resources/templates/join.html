@@ -124,10 +124,10 @@ input.email-local-part, select.email-domain {
 
 		<form action="/join" method="post" id="joinForm">
 
-			<label for="username">아이디</label>
+			<label for="username" >아이디</label>
 			<div class="form-row">
 				<input type="text" id="username" name="username" required
-					th:value="${user != null} ? ${user.username} : ''">
+					th:value="${user != null} ? ${user.username} : ''" placeholder="영문,숫자를 조합해서 ID 작성">
 				<button type="button" onclick="checkUsername()">
 					중복<br>확인
 				</button>

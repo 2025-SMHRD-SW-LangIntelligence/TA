@@ -2,511 +2,509 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta charset="UTF-8" />
-	<title>우리 동네 지반침하 안전점수</title>
-	<script type="text/javascript"
-		src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cd3f88c99b509eab24270116d671ff65&libraries=services,clusterer"></script>
-	<link rel="stylesheet" href="css/filter.css">
-	<style>
-		html,
-		body {
-			height: 100%;
-			margin: 0;
-			padding: 0;
-			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-			background-color: white;
-		}
-
-		#wrap {
-			max-width: 1200px;
-			margin: auto;
-			height: 100%;
-			display: flex;
-			flex-direction: column;
-		}
-
-		#header {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			padding: 15px 20px;
-			position: relative;
-			justify-content: space-between;
-			padding: 15px 20px;
-		}
-
-		.menu-icon {
-			width: 25px;
-			height: 20px;
-			background-image:
-				url('data:image/svg+xml;charset=UTF-8,<svg width="25" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="25" height="3" y="0" fill="%23333"/><rect width="25" height="3" y="8" fill="%23333"/><rect width="25" height="3" y="16" fill="%23333"/></svg>');
-			background-size: cover;
-		}
-
-		#container {
-			flex: 1;
-			position: relative;
-		}
-
-		#map {
-			width: 100%;
-			height: 100%;
-		}
-
-		.search-bar {
-			position: absolute;
-			top: 20px;
-			left: 50%;
-			transform: translateX(-50%);
-			align-items: center;
-			background: white;
-			padding: 0px 15px;
-			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-			border: 2px solid #337DFF;
-			border-radius: 18px;
-			z-index: 10;
-			height: 44px;
-			display: flex;
-			justify-content: center;
-			width: 650px;
-		}
-
-		.search-bar input {
-			width: 100%;
-			padding: 10px 12px;
-			border: none;
-			font-size: 14px;
-			outline: none;
-		}
-
-		.btn_search {
-			background: none;
-			border: none;
-			margin-left: 10px;
-			cursor: pointer;
-		}
-
-		.btn_search:hover {
-			opacity: 0.8;
-		}
-
-		.btn_search img {
-			width: 25px;
-			height: 25px;
-		}
-
-		#result-list {
-			position: absolute;
-			top: 66px;
-			left: 50%;
-			transform: translateX(-50%);
-			width: 100%;
-			max-width: 750px;
-			overflow-y: auto;
-			background: white;
-			border: 2px solid #337DFF;
-			border-radius: 0px 0px 18px 18px;
-			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-			z-index: 15;
-			padding: 0px 15px;
-			display: none;
-		}
-
-		#result-list div {
-			padding: 10px;
-			border-bottom: 1px solid #eee;
-			cursor: pointer;
-		}
-
-		#result-list div:hover {
-			background-color: #f0f0f0;
-		}
-
-		.menu-icon {
-			width: 25px;
-			height: 20px;
-			background-image:
-				url('data:image/svg+xml;charset=UTF-8,<svg width="25" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="25" height="3" y="0" fill="%23333"/><rect width="25" height="3" y="8" fill="%23333"/><rect width="25" height="3" y="16" fill="%23333"/></svg>');
-			background-size: cover;
-			cursor: pointer;
-		}
-
-		#menuList {
-			position: absolute;
-			top: 60px;
-			left: 20px;
-			background-color: #f9f9f9;
-			border: 1px solid #ccc;
-			border-radius: 10px;
-			padding: 15px;
-			width: 200px;
-			display: none;
-			z-index: 999;
-		}
-
-		.login-message {
-			font-size: 14px;
-			color: #333;
-			margin-bottom: 10px;
-			font-weight: bold;
-		}
-
-		.login-btn {
-			display: block;
-			width: 100%;
-			padding: 8px;
-			background-color: #337DFF;
-			color: white;
-			border: none;
-			border-radius: 6px;
-			cursor: pointer;
-			margin-bottom: 10px;
-		}
-
-		#menuList ul {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-		}
-
-		#menuList ul li {
-			padding: 8px;
-			cursor: pointer;
-			border-bottom: 1px solid #eee;
-		}
-
-		#menuList ul li:hover {
-			background-color: #eee;
-		}
-
-		.radius_border {
-			border: 1px solid #919191;
-			border-radius: 5px;
-		}
-
-		.custom_location_control {
-			position: absolute;
-			top: 80px;
-			left: 10px;
-			width: 32px;
-			height: 32px;
-			overflow: hidden;
-			z-index: 1;
-			background-color: #f5f5f5;
-		}
-
-		.custom_location_control span {
-			display: block;
-			width: 32px;
-			height: 32px;
-			text-align: center;
-			cursor: pointer;
-		}
-
-		.custom_location_control span img {
-			width: 15px;
-			height: 15px;
-			padding: 9px 0;
-			border: none;
-		}
-
-		.custom_location_control span img:hover {
-			opacity: 0.5;
-		}
-
-		.radius_border {
-			border: 1px solid #919191;
-			border-radius: 5px;
-		}
-
-		#popupOverlay {
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			background: rgba(0, 0, 0, 0.5);
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			z-index: 1000;
-		}
-
-		#popupContent {
-			background: white;
-			padding: 30px;
-			border-radius: 12px;
-			width: 400px;
-			max-width: 80%;
-			text-align: center;
-			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-		}
-
-		#popupContent h2 {
-			margin-top: 0;
-			color: #337DFF;
-		}
-
-		#popupContent button {
-			margin-top: 20px;
-			padding: 8px 16px;
-			background-color: #337DFF;
-			color: white;
-			border: none;
-			border-radius: 6px;
-			cursor: pointer;
-		}
-
-		#popupContent button:hover {
-			background-color: #285fd0;
-		}
-
-		/* 모달 오버레이 */
-		.modal-overlay {
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100vw;
-			height: 100vh;
-			background: rgba(0, 0, 0, 0.5);
-			z-index: 9999;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-		}
-
-		.modal-content {
-			width: 350px;
-			background: #fff;
-			overflow: hidden;
-			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-			font-family: 'Segoe UI', sans-serif;
-		}
-
-		.modal-header {
-			background: #1e90ff;
-			color: white;
-			padding: 12px 16px;
-			font-size: 16px;
-			font-weight: bold;
-			display: flex;
-			justify-content: space-between;
-			border-radius: 12px 12px 0px 0px;
-		}
-
-		.modal-close {
-			cursor: pointer;
-			color: red;
-		}
-
-		.modal-body {
-			padding: 16px;
-			font-size: 14px;
-			line-height: 1.5;
-		}
-
-		.modal-body h4 {
-			font-size: 18px;
-			margin-top: 0px;
-			margin-bottom: 0px;
-		}
-
-		.modal-body p {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			margin-block-start: 8px;
-			margin-block-end: 8px;
-		}
-
-		.modal-footer {
-			padding: 10px 16px;
-			text-align: center;
-			background-color: white;
-			border-radius: 0px 0px 12px 12px;
-			padding-top: 0;
-		}
-
-		.modal-footer button {
-			background: #1e90ff;
-			color: white;
-			border: none;
-			border-radius: 6px;
-			padding: 8px 16px;
-			cursor: pointer;
-			width: 100%;
-			font-weight: bold;
-		}
-
-		.modal-data-title {
-			flex-shrink: 0;
-			text-align: left;
-			width: 30%;
-		}
-
-		.modal-data-info {
-			text-align: right;
-			flex: 1;
-		}
-
-		.modal-data {
-			display: inline-block;
-			word-wrap: break-word;
-			white-space: normal;
-			word-break: auto-phrase;
-		}
-
-		#si_info p {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			margin-block-start: 8px;
-			margin-block-end: 8px;
-		}
-
-		.si_title {
-			display: inline-block;
-			word-wrap: break-word;
-			white-space: normal;
-		}
-
-		.modal_slider_dot .dot {
-			width: 12px;
-			height: 12px;
-			background-color: rgb(0, 0, 0, 0.1);
-			display: inline-block;
-			border-radius: 50%;
-			text-indent: -9999px;
-			transition: all 0.3s;
-			margin: 2px;
-			cursor: pointer;
-		}
-
-		.modal_slider_dot .dot.active {
-			background-color: #1e90ff;
-			cursor: pointer;
-		}
-
-		.modal_slider_btn {
-			display: none;
-		}
-
-		.modal_slider_btn a {
-			position: absolute;
-			top: 50%;
-			transform: translateY(-50%);
-			width: 15px;
-			height: 50px;
-			line-height: 50px;
-			text-align: center;
-			background-color: #1e90ff;
-			opacity: 0.5;
-			text-decoration: none;
-			color: white;
-			font-size: 20px;
-			font-weight: bold;
-		}
-
-		.modal_slider_btn a:hover {
-			cursor: pointer;
-			opacity: 1.0;
-		}
-
-		.modal_slider_btn a.prev {
-			left: 0;
-		}
-
-		.modal_slider_btn img {
-			width: 50px;
-			height: 50px;
-			background-color: white;
-		}
-
-		.modal_slider_btn a.next {
-			right: 0;
-		}
-
-		.modal_inner {
-			flex-wrap: wrap;
-			position: relative;
-		}
-
-		.modal_inner:hover .modal_slider_btn {
-			display: block;
-		}
-
-		.modal-content {
-			display: none;
-		}
-
-		.legend-box {
-			position: absolute;
-			bottom: 50px;
-			left: 30px;
-			background: white;
-			border: 1px solid #ccc;
-			border-radius: 10px;
-			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-			padding: 10px 12px;
-			font-size: 13px;
-			z-index: 100;
-			width: 150px;
-		}
-
-		.legend-title {
-			font-weight: bold;
-			border-bottom: 1px solid #ddd;
-			padding-bottom: 5px;
-			margin-bottom: 8px;
-			color: #333;
-		}
-
-		.legend-box ul {
-			list-style: none;
-			margin: 0;
-			padding: 0;
-		}
-
-		.legend-box li {
-			display: flex;
-			align-items: center;
-			margin-bottom: 6px;
-		}
-
-		.legend-icon {
-			width: 10px;
-			height: 10px;
-			border-radius: 50%;
-			display: inline-block;
-			margin-right: 8px;
-		}
-
-		/* 색상 정의 */
-		.legend-icon.red {
-			background-color: #FF4C4C;
-		}
-
-		.legend-icon.orange {
-			background-color: #FFA500;
-		}
-
-		.legend-icon.yellow {
-			background-color: #FFD700;
-		}
-
-		.legend-icon.green {
-			background-color: #32CD32;
-		}
-
-		.align-icon {
-			vertical-align: middle;
-			/* 필요에 따라 추가 조정 가능 */
-			/* margin-right: 5px; /* 아이콘과 텍스트 사이 간격 */
-			/* position: relative; /* 미세 조정을 위한 */
-			/* top: 1px; /* 1px 아래로 내리기 */
-
-		}
-	</style>
+<meta charset="UTF-8" />
+<title>우리 동네 지반침하 안전점수</title>
+<script type="text/javascript"
+	src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cd3f88c99b509eab24270116d671ff65&libraries=services,clusterer"></script>
+<link rel="stylesheet" href="css/filter.css">
+<style>
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	background-color: white;
+}
+
+#wrap {
+	max-width: 1200px;
+	margin: auto;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+#header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 15px 20px;
+	position: relative;
+	justify-content: space-between;
+	padding: 15px 20px;
+}
+
+.menu-icon {
+	width: 25px;
+	height: 20px;
+	background-image:
+		url('data:image/svg+xml;charset=UTF-8,<svg width="25" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="25" height="3" y="0" fill="%23333"/><rect width="25" height="3" y="8" fill="%23333"/><rect width="25" height="3" y="16" fill="%23333"/></svg>');
+	background-size: cover;
+}
+
+#container {
+	flex: 1;
+	position: relative;
+}
+
+#map {
+	width: 100%;
+	height: 100%;
+}
+
+.search-bar {
+	position: absolute;
+	top: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	align-items: center;
+	background: white;
+	padding: 0px 15px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+	border: 2px solid #337DFF;
+	border-radius: 18px;
+	z-index: 10;
+	height: 44px;
+	display: flex;
+	justify-content: center;
+	width: 650px;
+}
+
+.search-bar input {
+	width: 100%;
+	padding: 10px 12px;
+	border: none;
+	font-size: 14px;
+	outline: none;
+}
+
+.btn_search {
+	background: none;
+	border: none;
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+.btn_search:hover {
+	opacity: 0.8;
+}
+
+.btn_search img {
+	width: 25px;
+	height: 25px;
+}
+
+#result-list {
+	position: absolute;
+	top: 66px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 100%;
+	max-width: 750px;
+	overflow-y: auto;
+	background: white;
+	border: 2px solid #337DFF;
+	border-radius: 0px 0px 18px 18px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+	z-index: 15;
+	padding: 0px 15px;
+	display: none;
+}
+
+#result-list div {
+	padding: 10px;
+	border-bottom: 1px solid #eee;
+	cursor: pointer;
+}
+
+#result-list div:hover {
+	background-color: #f0f0f0;
+}
+
+.menu-icon {
+	width: 25px;
+	height: 20px;
+	background-image:
+		url('data:image/svg+xml;charset=UTF-8,<svg width="25" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="25" height="3" y="0" fill="%23333"/><rect width="25" height="3" y="8" fill="%23333"/><rect width="25" height="3" y="16" fill="%23333"/></svg>');
+	background-size: cover;
+	cursor: pointer;
+}
+
+#menuList {
+	position: absolute;
+	top: 60px;
+	left: 20px;
+	background-color: #f9f9f9;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	padding: 15px;
+	width: 200px;
+	display: none;
+	z-index: 999;
+}
+
+.login-message {
+	font-size: 14px;
+	color: #333;
+	margin-bottom: 10px;
+	font-weight: bold;
+}
+
+.login-btn {
+	display: block;
+	width: 100%;
+	padding: 8px;
+	background-color: #337DFF;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	margin-bottom: 10px;
+}
+
+#menuList ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+#menuList ul li {
+	padding: 8px;
+	cursor: pointer;
+	border-bottom: 1px solid #eee;
+}
+
+#menuList ul li:hover {
+	background-color: #eee;
+}
+
+.radius_border {
+	border: 1px solid #919191;
+	border-radius: 5px;
+}
+
+.custom_location_control {
+	position: absolute;
+	top: 80px;
+	left: 10px;
+	width: 32px;
+	height: 32px;
+	overflow: hidden;
+	z-index: 1;
+	background-color: #f5f5f5;
+}
+
+.custom_location_control span {
+	display: block;
+	width: 32px;
+	height: 32px;
+	text-align: center;
+	cursor: pointer;
+}
+
+.custom_location_control span img {
+	width: 15px;
+	height: 15px;
+	padding: 9px 0;
+	border: none;
+}
+
+.custom_location_control span img:hover {
+	opacity: 0.5;
+}
+
+.radius_border {
+	border: 1px solid #919191;
+	border-radius: 5px;
+}
+
+#popupOverlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+}
+
+#popupContent {
+	background: white;
+	padding: 30px;
+	border-radius: 12px;
+	width: 400px;
+	max-width: 80%;
+	text-align: center;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+#popupContent h2 {
+	margin-top: 0;
+	color: #337DFF;
+}
+
+#popupContent button {
+	margin-top: 20px;
+	padding: 8px 16px;
+	background-color: #337DFF;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+#popupContent button:hover {
+	background-color: #285fd0;
+}
+
+/* 모달 오버레이 */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 9999;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.modal-content {
+	width: 350px;
+	background: #fff;
+	overflow: hidden;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+	font-family: 'Segoe UI', sans-serif;
+}
+
+.modal-header {
+	background: #1e90ff;
+	color: white;
+	padding: 12px 16px;
+	font-size: 16px;
+	font-weight: bold;
+	display: flex;
+	justify-content: space-between;
+	border-radius: 12px 12px 0px 0px;
+}
+
+.modal-close {
+	cursor: pointer;
+	color: red;
+}
+
+.modal-body {
+	padding: 16px;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.modal-body h4 {
+	font-size: 18px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+.modal-body p {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-block-start: 8px;
+	margin-block-end: 8px;
+}
+
+.modal-footer {
+	padding: 10px 16px;
+	text-align: center;
+	background-color: white;
+	border-radius: 0px 0px 12px 12px;
+	padding-top: 0;
+}
+
+.modal-footer button {
+	background: #1e90ff;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	padding: 8px 16px;
+	cursor: pointer;
+	width: 100%;
+	font-weight: bold;
+}
+
+.modal-data-title {
+	flex-shrink: 0;
+	text-align: left;
+	width: 30%;
+}
+
+.modal-data-info {
+	text-align: right;
+	flex: 1;
+}
+
+.modal-data {
+	display: inline-block;
+	word-wrap: break-word;
+	white-space: normal;
+	word-break: auto-phrase;
+}
+
+#si_info p {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-block-start: 8px;
+	margin-block-end: 8px;
+}
+
+.si_title {
+	display: inline-block;
+	word-wrap: break-word;
+	white-space: normal;
+}
+
+.modal_slider_dot .dot {
+	width: 12px;
+	height: 12px;
+	background-color: rgb(0, 0, 0, 0.1);
+	display: inline-block;
+	border-radius: 50%;
+	text-indent: -9999px;
+	transition: all 0.3s;
+	margin: 2px;
+	cursor: pointer;
+}
+
+.modal_slider_dot .dot.active {
+	background-color: #1e90ff;
+	cursor: pointer;
+}
+
+.modal_slider_btn {
+	display: none;
+}
+
+.modal_slider_btn a {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 15px;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	background-color: #1e90ff;
+	opacity: 0.5;
+	text-decoration: none;
+	color: white;
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.modal_slider_btn a:hover {
+	cursor: pointer;
+	opacity: 1.0;
+}
+
+.modal_slider_btn a.prev {
+	left: 0;
+}
+
+.modal_slider_btn img {
+	width: 50px;
+	height: 50px;
+	background-color: white;
+}
+
+.modal_slider_btn a.next {
+	right: 0;
+}
+
+.modal_inner {
+	flex-wrap: wrap;
+	position: relative;
+}
+
+.modal_inner:hover .modal_slider_btn {
+	display: block;
+}
+
+.modal-content {
+	display: none;
+}
+
+.legend-box {
+	position: absolute;
+	bottom: 50px;
+	left: 30px;
+	background: white;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+	padding: 10px 12px;
+	font-size: 13px;
+	z-index: 100;
+	width: 150px;
+}
+
+.legend-title {
+	font-weight: bold;
+	border-bottom: 1px solid #ddd;
+	padding-bottom: 5px;
+	margin-bottom: 8px;
+	color: #333;
+}
+
+.legend-box ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.legend-box li {
+	display: flex;
+	align-items: center;
+	margin-bottom: 6px;
+}
+
+.legend-icon {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	display: inline-block;
+	margin-right: 8px;
+}
+
+/* 색상 정의 */
+.legend-icon.red {
+	background-color: #FF4C4C;
+}
+
+.legend-icon.orange {
+	background-color: #FFA500;
+}
+
+.legend-icon.yellow {
+	background-color: #FFD700;
+}
+
+.legend-icon.green {
+	background-color: #32CD32;
+}
+
+.align-icon {
+	vertical-align: middle;
+	/* 필요에 따라 추가 조정 가능 */
+	/* margin-right: 5px; /* 아이콘과 텍스트 사이 간격 */
+	/* position: relative; /* 미세 조정을 위한 */
+	/* top: 1px; /* 1px 아래로 내리기 */
+}
+</style>
 </head>
 
 <body>
@@ -514,7 +512,8 @@
 	<div id="popupOverlay"
 		style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; z-index: 1000;">
 
-		<div id="popupContent" style="background: white; padding: 30px; border-radius: 10px; text-align: center;">
+		<div id="popupContent"
+			style="background: white; padding: 30px; border-radius: 10px; text-align: center;">
 			<h2>안전신고 포상제 안내</h2>
 			<p>생활 속 위험 신고하고 포상 받으세요</p>
 			<p>지반침하나 보도 파손 등 안전 위험 요소를 신고시</p>
@@ -532,9 +531,10 @@
 
 			<div id="close">
 				<button onclick="closePop()">닫기</button>
+				<button onclick="location.href='/reward'">자세히 보기</button>
 			</div>
 
-			<button onclick="location.href='/reward'">자세히 보기</button>
+
 		</div>
 	</div>
 
@@ -549,33 +549,37 @@
 				</div>
 				<div class="login-message" th:if="${userName == null}">로그인이
 					필요합니다.</div>
-				<button class="login-btn" th:if="${userName == null}" onclick="location.href='/login'">로그인</button>
+				<button class="login-btn" th:if="${userName == null}"
+					onclick="location.href='/login'">로그인</button>
 				<ul>
-					<li onclick="location.href='/report/list'">
-						<img class="align-icon" src="/img/6.png" width="20" height="20"> 제보게시판
-					</li>
-					<li onclick="location.href='/reward'">
-						<img class="align-icon" src="/img/7.png" width="20" height="20"> 안전신고 포상금
-					</li>
-					<li onclick="location.href='/statistics'">
-						<img class="align-icon" src="/img/8.png" width="20" height="20"> 데이터 통계
-					</li>
-					<li onclick="location.href='/response'">
-						대처방법
-					</li>
-					<li onclick="location.href='/service'">
-						<img class="align-icon" src="/img/4.png" width="20" height="20"> 서비스 설명
-					</li>
-					<li onclick="location.href='/announcements'">
-						<img class="align-icon" src="/img/5.png" alt="알림 아이콘" width="20" height="20"> 공지사항
-					</li>
+					<li onclick="location.href='/report/list'"><img
+						class="align-icon" src="/img/6.png" width="20" height="20">
+						제보게시판</li>
+					<li onclick="location.href='/reward'"><img class="align-icon"
+						src="/img/7.png" width="20" height="20"> 안전신고 포상금</li>
+					<li onclick="location.href='/statistics'"><img
+						class="align-icon" src="/img/8.png" width="20" height="20">
+						데이터 통계</li>
+					<li onclick="location.href='/service'"><img class="align-icon"
+						src="/img/4.png" width="20" height="20"> 서비스 설명</li>
+					<li onclick="location.href='/announcements'"><img
+						class="align-icon" src="/img/5.png" alt="알림 아이콘" width="20"
+						height="20"> 공지사항</li>
+						
+						<!-- 관리자메뉴 관리자만 보이게 조건문 처리 병합 시 이것으로 할 것-->
+					<li
+						th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"
+						onclick="location.href='/admin/dashboard'">관리자메뉴</li>
+
+
+
 				</ul>
-				<button class="login-btn" th:if="${userName != null}" onclick="location.href='/logout'">로그아웃</button>
+				<button class="login-btn" th:if="${userName != null}"
+					onclick="location.href='/logout'">로그아웃</button>
 			</div>
 			<!-- 필터링 -->
 			<div id="filterToggle">
-				<img alt="" src="img/filter.png">
-				<span> 필터 </span>
+				<img alt="" src="img/filter.png"> <span> 필터 </span>
 			</div>
 
 			<!-- 필터링 사이드 바 -->
@@ -586,17 +590,23 @@
 					<button class="filter-tab-btn" data-tab="status">복구상태</button>
 				</div>
 				<div id="filter-contents">
-					<div class="filter-tab-content" id="filter-region" style="display: block;">
-						<label class="filter-tab-label"><input id="region-tab-label-all" type="checkbox"> 전체</label>
+					<div class="filter-tab-content" id="filter-region"
+						style="display: block;">
+						<label class="filter-tab-label"><input
+							id="region-tab-label-all" type="checkbox"> 전체</label>
 					</div>
 					<!-- 연도 -->
-					<div class="filter-tab-content" id="filter-year" style="display: none;">
-						<label class="filter-tab-label"><input id="year-tab-label-all" type="checkbox"> 전체</label>
+					<div class="filter-tab-content" id="filter-year"
+						style="display: none;">
+						<label class="filter-tab-label"><input
+							id="year-tab-label-all" type="checkbox"> 전체</label>
 					</div>
 
 					<!-- 상태 -->
-					<div class="filter-tab-content" id="filter-status" style="display: none;">
-						<label class="filter-tab-label"><input id="status-tab-label-all" type="checkbox"> 전체</label>
+					<div class="filter-tab-content" id="filter-status"
+						style="display: none;">
+						<label class="filter-tab-label"><input
+							id="status-tab-label-all" type="checkbox"> 전체</label>
 					</div>
 				</div>
 				<div id="filter-footer">
@@ -648,15 +658,15 @@
 								<h4>기본 정보</h4>
 								<p>
 									<span class="modal-data-title"> <strong>발생 위치 :</strong>
-									</span> <span class="modal-data-info"> <span id="modal-location"
-											class="modal-data"></span>
+									</span> <span class="modal-data-info"> <span
+										id="modal-location" class="modal-data"></span>
 									</span>
 								</p>
 
 								<p>
 									<span class="modal-data-title"> <strong>발생 일자 :</strong>
 									</span> <span class="modal-data-info"> <span id="modal-date"
-											class="modal-data"></span>
+										class="modal-data"></span>
 									</span>
 								</p>
 								<hr>
@@ -666,7 +676,7 @@
 									<span class="modal-data-title"> <span>넓이 / 연장 /
 											깊이 </span>
 									</span> <span class="modal-data-info"> <span id="modal-size"
-											class="modal-data"></span>
+										class="modal-data"></span>
 									</span>
 								</p>
 								<hr>
@@ -687,7 +697,7 @@
 								<p>
 									<span class="modal-data-title"> <span id="modal-bedType"></span>
 									</span> <span class="modal-data-info"> <span id="modal-bedInfo"
-											class="modal-data"></span>
+										class="modal-data"></span>
 									</span>
 								</p>
 								<hr>
@@ -696,26 +706,26 @@
 								<p>
 									<span class="modal-data-title"> <strong>사망자 수 :</strong>
 									</span> <span class="modal-data-info"> <span id="modal-death"
-											class="modal-data"></span>
+										class="modal-data"></span>
 									</span>
 								</p>
 								<p>
 									<span class="modal-data-title"> <strong>부상자 수 :</strong>
 									</span> <span class="modal-data-info"> <span id="modal-injury"
-											class="modal-data"></span>
+										class="modal-data"></span>
 									</span>
 								</p>
 								<p>
 									<span class="modal-data-title"> <strong>차량 피해 :</strong>
 									</span> <span class="modal-data-info"> <span id="modal-vehicle"
-											class="modal-data"></span>
+										class="modal-data"></span>
 									</span>
 								</p>
 								<p>
 									<span class="modal-data-title"> <strong>관련 뉴스
 											URL :</strong>
-									</span> <span class="modal-data-info"> <a id="modal-news" class="modal-data"
-											href="#" target="_blank">바로가기</a>
+									</span> <span class="modal-data-info"> <a id="modal-news"
+										class="modal-data" href="#" target="_blank">바로가기</a>
 									</span>
 								</p>
 								<hr>
@@ -724,13 +734,13 @@
 								<p>
 									<span class="modal-data-title"> <strong>처리 상태 :</strong>
 									</span> <span class="modal-data-info"> <span id="modal-status"
-											class="modal-data"></span>
+										class="modal-data"></span>
 									</span>
 								</p>
 								<p>
 									<span class="modal-data-title"> <strong>처리 방법 :</strong>
 									</span> <span class="modal-data-info"> <span id="modal-method"
-											class="modal-data"></span>
+										class="modal-data"></span>
 									</span>
 								</p>
 								<hr>
@@ -738,8 +748,8 @@
 							</div>
 						</div>
 						<div class="modal_slider_btn">
-							<a href="" class="prev" title="이전"> &lt </a> <a href="#" class="next" title="다음"> &gt
-							</a>
+							<a href="" class="prev" title="이전"> &lt </a> <a href="#"
+								class="next" title="다음"> &gt </a>
 						</div>
 					</div>
 					<div class="modal-footer">

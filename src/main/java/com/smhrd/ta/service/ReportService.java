@@ -33,9 +33,10 @@ public class ReportService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다."));
     }
     
- // ReportService.java
+ // 레포트 리스트 최신 등록순으로 보이기 - 처음 작성한 레포트 리스트 순서 1부터 시작
     public Page<Report> getPagedReports(int page) {
-        Pageable pageable = PageRequest.of(page, page, Sort.by("reportId").descending());
+        int size = 10; // 혹은 상수로 지정
+        Pageable pageable = PageRequest.of(page, size, Sort.by("reportId").descending());
         return reportRepository.findAll(pageable);
     }
 
@@ -43,6 +44,7 @@ public class ReportService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("reportId").descending());
         return reportRepository.findByContentContaining(keyword, pageable);
     }
+
 
 
 

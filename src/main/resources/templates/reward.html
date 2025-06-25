@@ -1,120 +1,64 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8">
   <title>안전신고 포상제</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f0f8ff;
-      padding: 40px;
-      color: #333;
-    }
-
-    h1 {
-      text-align: center;
-      color: #004d99;
-      margin-bottom: 30px;
-    }
-
-    .section {
-      background-color: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 30px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .section h2 {
-      color: #005fcc;
-      border-bottom: 2px solid #e0e0e0;
-      padding-bottom: 10px;
-    }
-
-    .highlight {
-      color: #cc3300;
-      font-weight: bold;
-    }
-
-    ul {
-      margin-top: 10px;
-      margin-bottom: 20px;
-    }
-
-    .step-image {
-      width: 100%;
-      max-width: 700px;
-      display: block;
-      margin: 20px auto;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-
-    .link {
-      margin-top: 30px;
-      text-align: center;
-    }
-
-    .link a {
-      color: #0066cc;
-      font-weight: bold;
-      text-decoration: none;
-    }
-
-    .link a:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <link rel="stylesheet" href="css/service-reward.css">
 </head>
+
 <body>
-  <h1>안전신고 포상제</h1>
-  
-  <div
-			style="position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; gap: 10px;">
-			<!-- 홈으로 버튼 -->
-			<a th:href="@{/}"
-				style="background-color: #337DFF; color: white; padding: 10px 18px; border-radius: 6px; font-weight: bold; text-decoration: none; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);">
-				홈으로 </a>
-  </div>
-  
-  
+  <div id="wrap">
+    <h1>안전신고 포상제</h1>
 
-  <div class="section">
-    <h2>📌 안전신고 포상제란?</h2>
-    <p>
-      시민의 자발적인 신고·제안활동을 통해 <span class="highlight">생활 속 안전 위험요인</span>과 
-      <span class="highlight">재난징후</span> 등을 사전에 예방하고 안전관리를 강화하고자 하는 제도입니다.
-    </p>
-    <p>
-      시민이 직접 참여하여 신고제안활동에 관심을 제고하고, 반기별 전문가 평가를 거쳐 
-      <span class="highlight">우수사례를 선정·포상</span>함으로써 시민이 안심할 수 있는 안전한 사회를 만들고자 합니다.
-    </p>
+    <div class="section">
+      <h2>📌 안전신고 포상제란?</h2>
+      <p>
+        시민의 자발적인 신고·제안활동을 통해 <span class="highlight">생활 속 안전 위험요인</span>과
+        <span class="highlight">재난징후</span> 등을 사전에 예방하고 안전관리를 강화하고자 하는 제도입니다.
+      </p>
+      <p>
+        시민이 직접 참여하여 신고제안활동에 관심을 제고하고, 반기별 전문가 평가를 거쳐
+        <span class="highlight">우수사례를 선정·포상</span>함으로써 시민이 안심할 수 있는 안전한 사회를 만들고자 합니다.
+      </p>
 
-    <h2>📝 신고 방법</h2>
-    <ul>
-      <li>안전신문고: <a href="https://www.safetyreport.go.kr" target="_blank">https://www.safetyreport.go.kr </a> (사이트 접속 -> 신고하기 -> 안전신고 클릭)</li>
-      <li>응답소: <a href="https://eungdapso.seoul.go.kr" target="_blank">https://eungdapso.seoul.go.kr</a>(사이트 접속 -> 민원신청 -> 민원신청하기 클릭)</li>
-      <li>안전신문고 앱 , 스마트불편신고 앱, 120 다산콜센터 등</li>
-    </ul>
+      <h2>📝 신고 방법</h2>
+      <ul>
+        <li>안전신문고: <a href="https://www.safetyreport.go.kr" target="_blank">https://www.safetyreport.go.kr </a> (사이트 접속
+          ->
+          신고하기 -> 안전신고 클릭)</li>
+        <li>응답소: <a href="https://eungdapso.seoul.go.kr" target="_blank">https://eungdapso.seoul.go.kr</a>(사이트 접속 ->
+          민원신청
+          -> 민원신청하기 클릭)</li>
+        <li>안전신문고 앱 , 스마트불편신고 앱, 120 다산콜센터 등</li>
+      </ul>
 
 
-    <h2>💰 포상 기준</h2>
-    <ul>
-      <li><strong>포상대상:</strong> 안전도 개선에 기여한 제안자</li>
-      <li><strong>포상금액:</strong> <span class="highlight">3만 ~ 30만 원</span> (외부전문가 평가 후 차등 지급)</li>
-      <li><strong>유의사항:</strong>
-        <ul>
-          <li>중복신고나 단순 민원성 신고는 제외</li>
-          <li>단체명의, 유사내용 다수신고 시 실적 인정 안됨</li>
-          <li>개인당 반기 1회만 지급</li>
-        </ul>
-      </li>
-    </ul>
+      <h2>💰 포상 기준</h2>
+      <ul>
+        <li><strong>포상대상:</strong> 안전도 개선에 기여한 제안자</li>
+        <li><strong>포상금액:</strong> <span class="highlight">3만 ~ 30만 원</span> (외부전문가 평가 후 차등 지급)</li>
+        <li><strong>유의사항:</strong>
+          <ul>
+            <li>중복신고나 단순 민원성 신고는 제외</li>
+            <li>단체명의, 유사내용 다수신고 시 실적 인정 안됨</li>
+            <li>개인당 반기 1회만 지급</li>
+          </ul>
+        </li>
+      </ul>
 
-    <div class="link">
-      👉 더 자세한 내용은 <a href="https://news.seoul.go.kr/safe/safety-sinmungo" target="_blank">서울시 안전신고 포상제 안내</a>에서 확인하세요.
+      <div class="link">
+        👉 더 자세한 내용은 <a href="https://news.seoul.go.kr/safe/safety-sinmungo" target="_blank">서울시 안전신고 포상제 안내</a>에서
+        확인하세요.
+      </div>
+      <!-- 홈 버튼 추가 -->
+      <div style="text-align: right;">
+        <a href="/" class="home-btn">홈으로</a>
+      </div>
     </div>
+
   </div>
+
 </body>
+
 </html>

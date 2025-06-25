@@ -1,120 +1,37 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8">
-  <title>우리 동네 지반안전 서비스 소개</title>
-  <style>
-    body {
-      font-family: 'Noto Sans KR', sans-serif;
-      background-color: #eaf4fc;
-      margin: 0;
-      padding: 0;
-      color: #222;
-    }
-
-    .about-wrapper {
-      display: flex;
-      justify-content: center;
-      padding: 60px 20px;
-    }
-
-    .about-card {
-      background-color: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      padding: 40px;
-      max-width: 880px;
-      width: 100%;
-    }
-
-    .about-card h2 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: #0074c2;
-      margin-bottom: 30px;
-    }
-
-    .about-card h3 {
-      font-size: 1.2rem;
-      margin-top: 30px;
-      color: #0074c2;
-    }
-
-    .about-card p {
-      font-size: 1.05rem;
-      line-height: 1.8;
-      margin-bottom: 18px;
-    }
-
-    .about-card ul {
-      list-style: disc;
-      padding-left: 20px;
-      margin-bottom: 24px;
-    }
-
-    .about-card li {
-      font-size: 1rem;
-      line-height: 1.7;
-      margin-bottom: 10px;
-    }
-
-    .divider {
-      border-top: 1px solid #ccc;
-      margin: 30px 0;
-    }
-
-    .about-card .note {
-      font-size: 0.95rem;
-      color: #666;
-      margin-top: 20px;
-    }
-    
-    .home-btn {
-	    display: inline-block;
-	    padding: 8px 15px;
-	    margin-bottom: 10px;
-	    border: 1px solid #007bff;
-	    border-radius: 6px;
-	    text-decoration: none;
-	    background-color: #007bff;
-	    color: white;
-	    font-weight: bold;
-	    transition: background-color 0.3s ease, color 0.3s ease;
-	}
-    
-    
-    
-  </style>
+  <title>서비스 소개</title>
+  <link rel="stylesheet" href="css/service-reward.css">
 </head>
-<body>
-	
-  <div class="about-wrapper">
-    <div class="about-card">
-      <h2>서비스 소개</h2>
 
-      <h3>1. 서비스명</h3>
+<body>
+  <div id="wrap">
+    <h1>서비스 소개</h1>
+
+    <div class="section">
+
+      <h2>1. 서비스명</h2>
       <p><strong>우리 동네 싱크홀맵 </strong></p>
 
-      <div class="divider"></div>
+      <h2>2. 서비스 목적</h2>
+      <p>
+        본 플랫폼은 시민이 도시 내 싱크홀 사고 이력을 실시간으로 확인할 수 있도록 하여 <strong>생활 속
+          안전 인식 제고와 사고 예방</strong>에 기여합니다.
+      </p>
+      <p>
+        또한 공공기관에는 <strong>정책 수립 및 유지보수 예산의 효율적 집행</strong>을 위한 의사결정 기반을
+        제공합니다.
+      </p>
+      <p>
+        아울러 <strong>부동산 수요자들이 매물 지역의 지반 안전성을 사전에 확인</strong>할 수 있도록 지원함으로써
+        <strong>신뢰도 높은 주거지 선택</strong>과 <strong>시장 정보 비대칭 해소</strong>에도 기여하고자 합니다.
 
-      <h3>2. 서비스 목적</h3>
-			<p>
-				본 플랫폼은 시민이 도시 내 싱크홀 사고 이력을 실시간으로 확인할 수 있도록 하여 <strong>생활 속
-					안전 인식 제고와 사고 예방</strong>에 기여합니다.
-			</p>
-			<p>
-				또한 공공기관에는 <strong>정책 수립 및 유지보수 예산의 효율적 집행</strong>을 위한 의사결정 기반을
-				제공합니다.
-			</p>
-			<p>
-				아울러 <strong>부동산 수요자들이 매물 지역의 지반 안전성을 사전에 확인</strong>할 수 있도록 지원함으로써
-				<strong>신뢰도 높은 주거지 선택</strong>과 <strong>시장 정보 비대칭 해소</strong>에도 기여하고자 합니다.
+      </p>
 
-			</p>
-
-			<div class="divider"></div>
-
-      <h3>3. 주요 기능</h3>
+      <h2>3. 주요 기능</h2>
       <ul>
         <li><strong>싱크홀 위치 시각화</strong> : 지도 기반으로 발생 지점을 마커로 표시</li>
         <li><strong>사고 상세 정보 팝업</strong> : 마커 클릭 시 사고일, 원인, 지층 등 정보 제공</li>
@@ -123,25 +40,22 @@
         <li><strong>(예정) 예측 기능 설계</strong> : 위치 기반 침하 위험도 예측 </li>
       </ul>
 
-      <div class="divider"></div>
-
-      <h3>4. 데이터 수집</h3>
+      <h2>4. 데이터 수집</h2>
       <ul>
         <li><strong>데이터</strong> : 지하안전정보시스템(JIS), 공공데이터포털, 지오빅데이터 오픈 플랫폼 </li>
-         
+
       </ul>
 
-      <div class="divider"></div>
-
       <p class="note">※ 본 서비스는 공공데이터 기반으로 구축되었으며, 데이터는 지속적으로 업데이트됩니다.</p>
-    
-    	 <!-- 홈 버튼 추가 -->
-      <div style="text-align: right; margin-bottom: 15px;">
+
+      <!-- 홈 버튼 추가 -->
+      <div style="text-align: right;">
         <a href="/" class="home-btn">홈으로</a>
       </div>
-    
     </div>
+
   </div>
 
 </body>
+
 </html>

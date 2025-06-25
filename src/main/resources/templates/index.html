@@ -372,6 +372,14 @@
 			white-space: normal;
 			word-break: auto-phrase;
 		}
+		.modal-image-div {
+			max-height : 250px;
+			overflow : hidden;
+		}
+		.modal-image-div img {
+			max-height : initial;
+			margin-top : -20%;
+		}
 
 		#si_info p {
 			display: flex;
@@ -702,8 +710,10 @@
 								<hr>
 
 								<h4>피해 사진</h4>
-								<img id="modal-image" src="" alt="싱크홀 이미지"
-									style="width: 100%; border-radius: 8px; margin-bottom: 10px;" />
+								<div class="modal-image-div">
+									<img id="modal-image" src="" alt="싱크홀 이미지"
+										style="width: 100%; border-radius: 8px; margin-bottom: 10px;" />
+								</div>
 								<hr>
 
 								<h4>발생 원인</h4>

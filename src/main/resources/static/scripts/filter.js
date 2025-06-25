@@ -35,7 +35,7 @@ const region_list = ['경기도', '서울특별시', '부산광역시', '경상�
     '인천광역시', '경상북도', '대구광역시', '충청남도',
     '전라남도', '전북특별자치도', '충청북도', '강원특별자치도',
     '대전광역시', '광주광역시', '울산광역시', '세종특별자치시', '제주특별자치도']
-const year_list = ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024']
+const year_list = ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025']
 year_list.reverse()
 const tr_status_list = ['복구완료', '복구중', '임시복구']
 
@@ -64,13 +64,3 @@ filter_gen_event("filter-year", year_list, "year-tab-label-all")
 // filter 상태
 filter_gen_event("filter-status", tr_status_list, "status-tab-label-all")
 
-// 필터 적용 함수
-function applyFilters() {
-    const regionValues = [...document.querySelectorAll("#filter-region input:checked")].map(i => i.value);
-    const yearValues = [...document.querySelectorAll("#filter-year input:checked")].map(i => i.value);
-    const statusValues = [...document.querySelectorAll("#filter-status input:checked")].map(i => i.value);
-
-    fetchMarkersInBounds(regionValues, yearValues, statusValues);
-}
-
-// test

@@ -16,8 +16,8 @@
 * 사용자 위치 기반 지반침하 이력 마커 제공
 * 주소 입력 만으로 침하 이력을 지도 위에 시각화
 * 연도별 침하 발생건수, 지역별 침하 원인 등을 시각화
-* 시민 제보와 포상제도 연계를 통한 자발적 참여를 유도
-* 지역, 연도, 복구상태, 깊이 단위로 필터링 가능
+* 시민 제보와 포상 제도 연계를 통한 자발적 참여를 유도
+* 지역, 연도, 복구 상태, 깊이 단위로 필터링 가능
 <br>
 
 ## ⛏ 기술스택
@@ -38,7 +38,7 @@
     <tr>
         <td>라이브러리</td>
         <td>
-            <img src="https://img.shields.io/badge/BootStrap-7952B3?style=for-the-badge&logo=BootStrap&logoColor=white"/>
+            <img src="https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=Chart.js&logoColor=white"/>
             <img src="https://img.shields.io/badge/KakaoMap-FFCD00?style=for-the-badge&logo=Kakao&logoColor=white"/>
         </td>
     </tr>
